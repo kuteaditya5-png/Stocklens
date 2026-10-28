@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#0b1220"/>
+<meta name="description" content="NIFTY 50 and SENSEX equity scanner, entry confirmation, risk-sized targets and local paper trading."/>
+<title>StockLens India — Day Trader</title>
+<link rel="stylesheet" href="/app.css"/>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon"><svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M4 26l8-9 6 5 13-15" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 7h7v7" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></div><div><b>STOCKLENS<span class="brand-dot">.</span></b><small>INDIA / DAY TRADER</small></div></div>
+    <div class="nav-section">WORKSPACE</div>
+    <button class="side-link selected" data-go="home"><span class="side-icon">▦</span> Dashboard</button>
+    <button class="side-link" data-go="screener"><span class="side-icon">≡</span> Stock screener</button>
+    <button class="side-link" data-go="playbook"><span class="side-icon">⌁</span> Strategy &amp; risk</button>
+    <button class="side-link" data-go="paper"><span class="side-icon">◈</span> Paper tickets <span id="ticketBadge" class="side-count">0</span></button>
+    <div class="sidebar-bottom"><div class="sidebar-info"><span class="info-badge">◎</span><div><strong>Paper mode only</strong><span>Never places real trades</span></div></div><a class="upstream" href="https://github.com/Jakeschincariol/day-trader-skill" target="_blank" rel="noopener">Inspired by day-trader-skill ↗</a></div>
+  </aside>
+  <main id="home" class="main">
+    <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Overview</strong></div><div class="topright"><span class="live-pill" id="marketBadge"><i></i> Checking IST market</span><span id="clock" class="clock"></span><button class="avatar" title="Local mode">SL</button></div></header>
+    <section class="heading"><div><div class="eyebrow"><span class="tiny-line"></span> INDIA EQUITIES · TECHNICAL ANALYSIS</div><h1>Trade with <em>clarity.</em></h1><p>Find setups across NIFTY 50 and SENSEX. Validate entries, plan risk and practice without executing trades.</p></div><div class="heading-actions"><button class="button button-outline" id="refreshBtn">↻ &nbsp;Refresh</button><button class="button button-primary" id="scanBtn"><span class="btn-bolt">✦</span> Scan market</button></div></section>
+    <div id="notice" class="notice" hidden></div>
+    <section class="stats" aria-label="Market summary">
+      <div class="stat"><div class="stat-title">INDEX COVERAGE <span class="stat-ico blue">▤</span></div><div class="stat-value" id="universeCount">—</div><div class="stat-sub">Unique NIFTY 50 + SENSEX stocks</div></div>
+      <div class="stat"><div class="stat-title">WATCH SETUPS <span class="stat-ico green">↗</span></div><div class="stat-value" id="watchCount">—</div><div class="stat-sub"><span class="mark green"></span> Scanned candidates, not buy orders</div></div>
+      <div class="stat"><div class="stat-title">SCANNED <span class="stat-ico purple">◫</span></div><div class="stat-value" id="scanCount">0 <small id="scanDenom">/ —</small></div><div class="stat-sub" id="scanDescription">Awaiting first scan</div></div>
+      <div class="stat"><div class="stat-title">PAPER TICKETS <span class="stat-ico amber">◈</span></div><div class="stat-value" id="paperCount">0</div><div class="stat-sub">Saved in this browser only</div></div>
+    </section>
+    <section id="screener" class="panel screener"><div class="panel-head"><div><div class="sub-eyebrow">DISCOVER OPPORTUNITIES</div><h2>Market scanner <span class="small-status" id="scanStatus">NO DATA YET</span></h2><p>Rules-based signals from completed daily candles. Quotes can be delayed.</p></div><div class="panel-actions"><span id="sourceChip" class="tiny-chip">Index lists loading</span><button id="exportBtn" class="button button-sm button-outline">↓ Export CSV</button></div></div>
+      <div class="scan-controls"><div class="tabs"><button data-market="all" class="tab active">All stocks</button><button data-market="nifty" class="tab">NIFTY 50</button><button data-market="sensex" class="tab">SENSEX 30</button><button data-market="saved" class="tab">★ Watchlist <span id="watchBadge">0</span></button></div><div class="right-controls"><div class="search"><span>⌕</span><input id="searchInput" placeholder="Search ticker..." aria-label="Search ticker" /></div><select id="filterInput" aria-label="Filter signal"><option value="all">All signals</option><option value="WATCH">Watch setups</option><option value="WAIT">Wait</option><option value="WEAK">Weak</option></select></div></div>
+      <div class="table-scroll"><table><thead><tr><th>STOCK <span>↕</span></th><th>INDEX</th><th>REFERENCE PRICE</th><th>CHANGE</th><th>RSI (14)</th><th>SETUP</th><th>SCANNER SCORE</th><th>SIGNAL</th><th></th></tr></thead><tbody id="stockRows"><tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⌁</div><h3>Ready when you are.</h3><p>Start a scan to load market data. No sample prices will be shown.</p><button class="button button-primary" id="emptyScan">Scan market →</button></div></td></tr></tbody></table></div>
+      <div class="table-footer"><span id="tableCaption">Showing 0 candidates</span><span id="feedWarning">Scores are screening signals, not advice.</span></div>
+    </section>
+    <div class="two-cols"><section id="playbook" class="panel methodology"><div class="sub-eyebrow">SYSTEMATIC PROCESS</div><h2>Your trading playbook</h2><p class="section-blurb">Signals must line up. A daily score alone is not a confirmed entry.</p><div class="timeline"><div class="step"><div class="step-number">01</div><div><strong>Screen the daily trend</strong><p>20/50-day averages, RSI, 20-day closing high and five-day momentum.</p></div></div><div class="step"><div class="step-number">02</div><div><strong>Confirm a real intraday trigger</strong><p>Opening range: 09:15–09:30 IST. Wait for a completed five-minute candle to close above its high.</p></div></div><div class="step"><div class="step-number">03</div><div><strong>Plan exit before entering</strong><p>Stop based on 1.25× ATR(14). Targets spaced 1.5R, 2.5R and 3.5R from entry.</p></div></div><div class="step"><div class="step-number">04</div><div><strong>Size and paper-practice</strong><p>Respect risk per trade and a 25% maximum capital allocation. Check brokerage data before trading.</p></div></div></div></section>
+      <section class="panel risk-panel"><div class="sub-eyebrow">GUARDRAILS</div><h2>Risk control center</h2><p class="section-blurb">Settings feed the calculations inside every stock's trade plan.</p><label class="input-label" for="capitalInput">Trading capital (₹)</label><div class="input-with"><span>₹</span><input id="capitalInput" type="number" min="1000" max="1000000000" step="1000" value="100000"/></div><label class="input-label" for="riskInput">Maximum planned loss per trade</label><div class="risk-chooser"><button data-risk="0.5">0.5%</button><button data-risk="1" class="selected">1%</button><button data-risk="2">2%</button></div><input id="riskInput" type="hidden" value="1"/><div class="divider"></div><div class="risk-row"><span>Max loss per trade</span><strong id="riskAmount">₹1,000.00</strong></div><div class="risk-row"><span>Max share of capital per plan</span><strong>25%</strong></div><div class="risk-row"><span>Markets</span><strong>NSE equity (cash)</strong></div><div class="risk-note"><span>ⓘ</span><p>Only cash-equity illustrations. No options, futures, leverage, shorting or broker integration.</p></div></section></div>
+    <section id="paper" class="panel paper-panel"><div class="panel-head"><div><div class="sub-eyebrow">SIMULATED ORDERS · LOCAL STORAGE</div><h2>Paper trade journal</h2><p>These are saved practice plans, not executed or filled market orders.</p></div><button class="button button-sm button-outline" id="clearPaperBtn">Clear journal</button></div><div id="paperRows" class="paper-rows"><div class="paper-empty">No paper tickets yet. Open a stock to create one.</div></div></section>
+    <footer><span>STOCKLENS INDIA <i>•</i> Research utility · Not investment advice</span><span>India cash market · 09:15–15:30 IST <i>•</i> Unofficial Yahoo Finance data</span></footer>
+  </main>
+</div>
+<div id="drawerShade" class="drawer-shade" hidden></div>
+<aside id="detailDrawer" class="detail-drawer" aria-label="Stock analysis" aria-modal="true" role="dialog" hidden>
+  <div class="drawer-header"><div><span class="sub-eyebrow">STOCK ANALYSIS / INDIA</span><h2 id="detailTitle">—</h2><p id="detailIndices">—</p></div><button id="closeDrawer" class="close-drawer" aria-label="Close panel">×</button></div>
+  <div id="detailBody" class="drawer-body"><div class="loading-copy">Loading market detail…</div></div>
+</aside>
+<div id="toast" class="toast" role="status"></div>
+<script src="/app.js" defer></script>
+</body></html>
