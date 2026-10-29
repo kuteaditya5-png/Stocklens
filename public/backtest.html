@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1020"><title>StockLens — Historical NIFTY 50 Backtest</title>
+<link rel="stylesheet" href="/index-intraday.css"><link rel="stylesheet" href="/backtest.css">
+<script src="/backtest.js" defer></script></head><body>
+<div class="frame"><aside class="sidebar">
+<a class="brand" href="/"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / INDEX DESK</small></span></a>
+<div class="nav-caption">WORKSPACE</div>
+<a class="nav-link" href="/"><span class="nav-icon">▥</span>NIFTY 50 Intraday <span class="nav-count">5m</span></a>
+<a class="nav-link current" aria-current="page" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest <span class="nav-count">LAB</span></a>
+<a class="nav-link" href="/stocks.html"><span class="nav-icon">☷</span>Constituent Stocks <span class="arrow">↗</span></a>
+<div class="sidebar-tip"><span class="dot"></span><b>Evidence, not predictions</b><p>Uses real completed historical index candles; no option premium is calculated.</p></div>
+<div class="sidebar-foot">READ-ONLY RESEARCH<br>UPSTOX V3 CANDLE FEED</div>
+</aside><main class="main">
+<header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Historical Backtest</strong></div><div class="topright"><span class="market-pill closed">HISTORICAL · INDEX POINTS</span><span class="avatar">SL</span></div></header>
+<div class="main-inner"><section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> REPLAY THE PAST · NIFTY 50</div><h1>Historical <span>Backtest</span></h1><p>Test one opening-range breakout setup per session on authentic Upstox five-minute candles, without risking capital.</p></div><a class="btn btn-blue" href="/">↗ Intraday Dashboard</a></section>
+<div id="notice" class="notice" hidden role="alert"></div>
+<section class="card controls"><div class="section-head"><div><div class="eyebrow eyebrow-compact">HISTORICAL WINDOW</div><h2>Run a strategy replay</h2><p>Maximum 28 calendar days per request; choose any completed historical window from Jan 2022 onward.</p></div><span class="chip">UPSTOX V3 · 5 MIN</span></div>
+<form id="backtestForm"><label>From date <input type="date" id="fromDate" required></label><label>To date <input type="date" id="toDate" required></label><label>Direction <select id="direction"><option value="both">Both directions</option><option value="long">Bullish only</option><option value="short">Bearish only</option></select></label><button type="submit" id="runBtn" class="btn btn-blue">▶ Run backtest</button></form>
+<div class="quick"><span>Quick ranges:</span><button type="button" data-days="7">7 days</button><button type="button" data-days="14">14 days</button><button type="button" data-days="28">28 days</button></div></section>
+<section id="results" hidden>
+<div class="overview backtest-stats"><div class="card"><div class="card-eyebrow">TRADES SIMULATED</div><div class="metric-value" id="tradeCount">—</div><div class="small-muted" id="daysStatus">—</div></div><div class="card"><div class="card-eyebrow">WIN RATE</div><div class="metric-value" id="winRate">—</div><div class="small-muted" id="winLoss">—</div></div><div class="card"><div class="card-eyebrow">NET R-MULTIPLE</div><div class="metric-value" id="netR">—</div><div class="small-muted">Gross result; no costs</div></div><div class="card"><div class="card-eyebrow">MAX DRAWDOWN</div><div class="metric-value" id="maxDD">—</div><div class="small-muted">In units of original trade risk</div></div></div>
+<div class="card"><div class="section-head"><div><div class="eyebrow eyebrow-compact">CUMULATIVE R</div><h2>Historical equity curve</h2></div><span class="chip" id="windowLabel">—</span></div><div id="equityChart" class="equity-chart"></div><p class="fine-print">Index points and risk multiples are *not* returns in ₹. Spot index cannot be traded directly, and the curve excludes transaction costs.</p></div>
+<div class="card trade-panel"><div class="section-head"><div><div class="eyebrow eyebrow-compact">ORDER-BY-ORDER</div><h2>Simulated trade journal</h2></div><span class="chip" id="skipLabel">—</span></div><div class="table-scroll"><table><thead><tr><th>DATE</th><th>BIAS</th><th>ENTRY</th><th>STOP</th><th>TARGET 2R</th><th>EXIT</th><th>RESULT</th><th>R</th><th>EXIT REASON</th></tr></thead><tbody id="tradeRows"></tbody></table></div></div>
+<div class="card"><div class="section-head"><div><div class="eyebrow eyebrow-compact">BACKTEST RULES</div><h2>What was actually simulated?</h2></div></div><ol id="assumptions"></ol></div>
+</section><footer><span>StockLens v1.3 · Historical ORB Replay</span><span>Research only · Not a profit forecast · No orders</span></footer>
+</div></main></div></body></html>

@@ -1,3 +1,11 @@
+## NEW in v1.3 — NIFTY 50 Historical Backtest
+
+Open **`/backtest.html`** to replay historical **NIFTY 50 spot-index** 5-minute candles fetched from Upstox V3. Choose past dates (up to 28 calendar days per request, any window back to January 2022) and LONG / SHORT / BOTH. No demo market candles are substituted.
+
+**Rules:** opening range 09:15–09:30 IST; first subsequent completed 5-minute close above or below the range triggers a hypothetical entry **at next 5-minute candle's open** (before 14:45); stop at the opposite edge of the opening range, target 2R, otherwise close the trade at 15:30. One trade per full regular session. If stop and target touch in the same 5m candle, assume stop first. Missing any of the 75 5-minute bars excludes that session. Report wins, losses, win rate, net R, maximum R drawdown, and a trade journal.
+
+**Limits:** This does not use execution-quality tick data or adjust for fees, spread, or slippage. Most importantly, index spot points **cannot** be treated as NIFTY CE/PE or futures P&L. This is **not** a verified profitable strategy. No historical results can be claimed until actual Upstox data is retrieved with a valid token. Auth protects `/api/backtest` using the existing `STOCKLENS_ACCESS_KEY` when set.
+
 # StockLens India v1.2 — NIFTY 50 Intraday Index Desk
 
 **The home dashboard `/` now analyzes the NIFTY 50 index itself, not its 50 constituent companies.** Uses Upstox V3 five-minute candles for **`NSE_INDEX|Nifty 50`**. The old individual-stock NIFTY 50/SENSEX screener is preserved at **`/stocks.html`** and continues using Upstox V3 authenticated market data.
@@ -133,3 +141,7 @@ vercel.json      Vercel presets, route rewrites, function duration
 ```
 
 **Disclaimer:** This is educational research software, not personalized investment advice. Day trading is risky. Verify live prices, liquidity and index composition independently with your broker or registered professional.
+
+## Navigation fix (v1.2.1)
+
+The constituent stock workspace (`/stocks.html`) now includes a permanent **NIFTY 50 Intraday** link in its sidebar, a back link in the top breadcrumb (including mobile where the sidebar is hidden), and an **Index Intraday** button beside the stock scan controls. All links point to `/`. No market-data code or Upstox credentials have changed.
