@@ -12,15 +12,16 @@
   <aside class="sidebar">
     <div class="brand"><div class="brand-icon"><svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M4 26l8-9 6 5 13-15" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 7h7v7" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></div><div><b>STOCKLENS<span class="brand-dot">.</span></b><small>INDIA / DAY TRADER</small></div></div>
     <div class="nav-section">WORKSPACE</div>
-    <button class="side-link selected" data-go="home"><span class="side-icon">▦</span> Dashboard</button>
+    <a class="side-link" href="/" aria-label="Go to NIFTY 50 Intraday dashboard"><span class="side-icon">↗</span> NIFTY 50 Intraday</a>
+    <button class="side-link selected" data-go="home"><span class="side-icon">▦</span> Stocks overview</button>
     <button class="side-link" data-go="screener"><span class="side-icon">≡</span> Stock screener</button>
     <button class="side-link" data-go="playbook"><span class="side-icon">⌁</span> Strategy &amp; risk</button>
     <button class="side-link" data-go="paper"><span class="side-icon">◈</span> Paper tickets <span id="ticketBadge" class="side-count">0</span></button>
     <div class="sidebar-bottom"><div class="sidebar-info"><span class="info-badge">◎</span><div><strong>Paper mode only</strong><span>Never places real trades</span></div></div><a class="upstream" href="https://github.com/Jakeschincariol/day-trader-skill" target="_blank" rel="noopener">Inspired by day-trader-skill ↗</a></div>
   </aside>
   <main id="home" class="main">
-    <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Overview</strong></div><div class="topright"><span class="live-pill" id="marketBadge"><i></i> Checking IST market</span><span id="clock" class="clock"></span><button class="avatar" title="Local mode">SL</button></div></header>
-    <section class="heading"><div><div class="eyebrow"><span class="tiny-line"></span> INDIA EQUITIES · TECHNICAL ANALYSIS</div><h1>Trade with <em>clarity.</em></h1><p>Find setups across NIFTY 50 and SENSEX. Validate entries, plan risk and practice without executing trades.</p></div><div class="heading-actions"><button class="button button-outline" id="refreshBtn">↻ &nbsp;Refresh</button><button class="button button-primary" id="scanBtn"><span class="btn-bolt">✦</span> Scan market</button></div></section>
+    <header class="topbar"><div class="crumb"><a href="/" aria-label="Back to NIFTY 50 Intraday">← NIFTY 50 Intraday</a><span>/</span><strong>Stocks overview</strong></div><div class="topright"><span class="live-pill" id="marketBadge"><i></i> Checking IST market</span><span id="clock" class="clock"></span><button class="avatar" title="Local mode">SL</button></div></header>
+    <section class="heading"><div><div class="eyebrow"><span class="tiny-line"></span> INDIA EQUITIES · TECHNICAL ANALYSIS</div><h1>Trade with <em>clarity.</em></h1><p>Find setups across NIFTY 50 and SENSEX. Validate entries, plan risk and practice without executing trades.</p></div><div class="heading-actions"><a class="button button-outline index-return" href="/">↗ Index Intraday</a><button class="button button-outline" id="refreshBtn">↻ &nbsp;Refresh</button><button class="button button-primary" id="scanBtn"><span class="btn-bolt">✦</span> Scan market</button></div></section>
     <div id="notice" class="notice" hidden></div>
     <section class="stats" aria-label="Market summary">
       <div class="stat"><div class="stat-title">INDEX COVERAGE <span class="stat-ico blue">▤</span></div><div class="stat-value" id="universeCount">—</div><div class="stat-sub">Unique NIFTY 50 + SENSEX stocks</div></div>

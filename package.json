@@ -1,6 +1,6 @@
 {
   "name": "stocklens-india-daytrader",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "NIFTY 50 spot index intraday five-minute dashboard with optional constituent stock scanner",
   "scripts": {
