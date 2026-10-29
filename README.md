@@ -1,3 +1,41 @@
+# StockLens India v1.2 — NIFTY 50 Intraday Index Desk
+
+**The home dashboard `/` now analyzes the NIFTY 50 index itself, not its 50 constituent companies.** Uses Upstox V3 five-minute candles for **`NSE_INDEX|Nifty 50`**. The old individual-stock NIFTY 50/SENSEX screener is preserved at **`/stocks.html`** and continues using Upstox V3 authenticated market data.
+
+New features:
+- Index spot candles displayed as a five-minute candlestick chart with accurate IST timestamps.
+- Opening 15-minute range: 09:15–09:30 IST. Breakout confirmation requires a **completed** five-minute candle closing outside that range.
+- High/low, previous close, current session open, nine- and twenty-one-period five-minute EMA, RSI(14), and time of most recent completed bar.
+- Long/short bias and a conditional 1R/2R index-point scenario only when data is from a **fresh, current trading session**. After close or on a holiday/weekend, the last available historical session is clearly labeled and **live signals are suppressed**.
+- Automatically refreshes visible index data every 60 seconds during weekday trading hours, or manually through Refresh candles. Any upstream errors remain visible; no prices or signals are fabricated.
+- Supports the original `UPSTOX_ACCESS_TOKEN` and `STOCKLENS_ACCESS_KEY` Vercel environment variables; no frontend brokerage token.
+
+> NIFTY 50 **spot index cannot be traded directly**. A spot breakout is **not** a NIFTY CE/PE option trade recommendation; options require current option premium, strike, expiry, spread, contract size and independent risk analysis. No order placement, backtested strategy edge, or live tick streaming is included.
+
+## Upgrade existing Termux → GitHub → Vercel
+
+1. Save the **StockLens_India_Nifty50_Intraday_v1.2.zip** file to Android Downloads.
+2. In Termux run:
+
+```sh
+cd ~/stocklens-india
+unzip -o ~/storage/downloads/StockLens_India_Nifty50_Intraday_v1.2.zip -d .
+npm test && npm run build
+git add -A
+git commit -m "StockLens v1.2 NIFTY 50 index intraday"
+git push origin main
+```
+
+3. Vercel redeploys automatically through GitHub integration. Visit **`/`** to see the index and **`/stocks.html`** for the stock scanner. Keep `UPSTOX_ACCESS_TOKEN` fresh in Vercel, and retain `STOCKLENS_ACCESS_KEY` as a private server-side passphrase. If no new Git commit was created, check `git status` and confirm the ZIP was extracted into the repository root.
+
+The read-only index API is **`GET /api/index`**, with the same `x-stocklens-access` private header when enabled. Do not put the Upstox access token or your private passphrase in URL query parameters or Git files. Since Upstox access tokens typically expire at 03:30 IST the next day, update the token in Vercel and redeploy after replacement.
+
+Live Upstox connectivity has **not** been verified using your account; automated tests mock the Upstox responses. See `UPSTOX_SETUP.md`.
+
+---
+
+## Previous v1.1 feature documentation
+
 # StockLens India — Day Trader v1.1
 
 **Deployable web application** for scanning *constituent equities* of **NIFTY 50** and **SENSEX 30**. Inspired by [Jake Schincariol's day-trader-skill](https://github.com/Jakeschincariol/day-trader-skill), re-designed for **Indian cash equities, NSE quote tickers, IST time and ₹ risk calculations**. This is **not** a port of all 11 upstream Claude skills.

@@ -1,6 +1,6 @@
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const ROOT=path.join(__dirname,'public');
-const APIs={'/api/universe':require('./api/universe'),'/api/scan':require('./api/scan'),'/api/detail':require('./api/detail')};
+const APIs={'/api/index':require('./api/index'),'/api/universe':require('./api/universe'),'/api/scan':require('./api/scan'),'/api/detail':require('./api/detail')};
 const TYPES={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.svg':'image/svg+xml'};
 const port=Number(process.env.PORT||3000);
 http.createServer(async (req,res)=>{
