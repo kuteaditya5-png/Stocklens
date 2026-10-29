@@ -20,7 +20,24 @@ function updateStats(){
   $('paperCount').textContent=state.paper.length;$('ticketBadge').textContent=state.paper.length;$('watchBadge').textContent=state.saved.length;
   $('riskAmount').textContent=money(state.capital*state.risk/100);
 }
-async function json(url){const r=await fetch(url);let doc;try{doc=await r.json()}catch{throw Error('Market provider sent an unreadable response')}if(!r.ok)throw Error(doc?.message||'HTTP '+r.status);return doc;}
+async function json(url){
+  const protectedRoute=url.startsWith('/api/scan')||url.startsWith('/api/detail');
+  let key='';try{key=sessionStorage.getItem('stocklens_access_key')||'';}catch{}
+  for(let attempt=0;attempt<2;attempt++){
+    const headers=protectedRoute&&key?{'x-stocklens-access':key}:{};
+    const r=await fetch(url,{headers,cache:'no-store'});
+    let doc;try{doc=await r.json()}catch{throw Error('Market provider sent an unreadable response')}
+    if(r.status===401&&doc?.code==='STOCKLENS_ACCESS_REQUIRED'&&protectedRoute&&attempt===0){
+      const entered=window.prompt('Enter the private StockLens scanner access key:');
+      if(!entered)throw Error('StockLens access key required');
+      key=entered;try{sessionStorage.setItem('stocklens_access_key',key)}catch{}
+      continue;
+    }
+    if(!r.ok)throw Error(doc?.message||'HTTP '+r.status);
+    return doc;
+  }
+  throw Error('StockLens access key rejected');
+}
 async function loadUniverse(){try {const x=await json('/api/universe');state.universe=x.data;state.total=x.data.count.unique;
   $('sourceChip').textContent=x.data.source.nifty.startsWith('NSE official')?'NSE constituent list ✓':'NSE fallback constituent list';
   if(!x.data.source.nifty.startsWith('NSE official')) notice('NSE constituent CSV is currently unavailable. Using a clearly labeled fallback list; verify membership before trading.');
@@ -40,7 +57,7 @@ function rowHTML(s){const saved=state.saved.includes(s.symbol);return `<tr class
 <td><span class="signal ${safe(s.signal)}">${safe(s.signal)}</span></td>
 <td><button class="favorite ${saved?'saved':''}" data-favorite="${safe(s.symbol)}" title="${saved?'Remove watchlist':'Add to watchlist'}">${saved?'★':'☆'}</button></td></tr>`;}
 function renderStocks(){const v=filtered(),body=$('stockRows');
-  if(!v.length){body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⌁</div><h3>${state.loading?'Reading market candles…':state.stocks.length?'No matching stocks':'No price data yet'}</h3><p>${state.loading?'Completed results will appear as batches finish.':state.stocks.length?'Try changing your filter.':'Scan to request Yahoo Finance data. No placeholder quotes are used.'}</p>${!state.loading?'<button class="button button-primary" id="emptyScan">Scan market →</button>':''}</div></td></tr>`;}
+  if(!v.length){body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">⌁</div><h3>${state.loading?'Reading market candles…':state.stocks.length?'No matching stocks':'No price data yet'}</h3><p>${state.loading?'Completed results will appear as batches finish.':state.stocks.length?'Try changing your filter.':'Scan to request Upstox market data. No placeholder quotes are used.'}</p>${!state.loading?'<button class="button button-primary" id="emptyScan">Scan market →</button>':''}</div></td></tr>`;}
   else body.innerHTML=v.map(rowHTML).join('');
   $('scanStatus').textContent=state.loading?'SCANNING…':state.complete?(state.errors.length?'PARTIAL / DONE':'SCAN COMPLETE'):state.scanned?'PARTIAL SCAN':'NO DATA YET';
   $('tableCaption').textContent=`Showing ${v.length} of ${state.stocks.length} valid results (${state.scanned}/${state.total||'—'} symbols attempted)`;
@@ -64,8 +81,8 @@ async function runScan(){if(state.loading||!state.universe)return;
   state.complete=!errorText&&state.scanned>=state.total;state.loading=false;
   $('scanBtn').disabled=false;$('scanBtn').innerHTML='<span class="btn-bolt">✦</span> Scan market';
   if(errorText)notice(`Scan interrupted (${errorText}). Results shown only for completed requests.`,true);
-  else if(state.errors.length===state.scanned)notice('The market-data feed returned no usable candles. It may be blocked or rate-limited. No sample prices have been substituted.',true);
-  else if(state.errors.length)notice(`${state.errors.length} symbol(s) could not be verified from Yahoo. Scanner results are incomplete.`,false);
+  else if(state.errors.length===state.scanned)notice('Upstox returned no usable candles. Check the access token in Vercel and the per-stock API errors. No sample prices have been substituted.',true);
+  else if(state.errors.length)notice(`${state.errors.length} symbol(s) could not be verified from Upstox. Scanner results are incomplete.`,false);
   else if(state.universe?.source.nifty.startsWith('NSE official'))notice('');
   renderStocks();
 }

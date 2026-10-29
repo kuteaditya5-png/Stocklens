@@ -1,10 +1,10 @@
 const {getUniverse}=require('../lib/universe');
-const {batchDaily}=require('../lib/yahoo');
+const {batchDaily}=require('../lib/upstox');
 const {analyzeDaily,isIndianCashSession}=require('../lib/indicators');
-const {send,onlyGet,params}=require('../lib/http');
+const {send,onlyGet,params,privateFeed}=require('../lib/http');
 const SIZE=12;
 module.exports=async (req,res)=>{
-  if(!onlyGet(req,res))return;
+  if(!onlyGet(req,res)||!privateFeed(req,res))return;
   const p=params(req),market=p.get('market')||'all',batch=Number(p.get('batch')||0);
   if(!['all','nifty','sensex'].includes(market)||!Number.isInteger(batch)||batch<0||batch>20) return send(res,400,{status:'error',message:'Invalid market or batch'});
   try {

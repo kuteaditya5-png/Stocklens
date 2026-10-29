@@ -1,9 +1,9 @@
 const {getUniverse}=require('../lib/universe');
-const {chart}=require('../lib/yahoo');
+const {chart,recentIntradayQuote}=require('../lib/upstox');
 const {analyzeDaily,intradayOrb,makePlan,atr,isIndianCashSession}=require('../lib/indicators');
-const {send,onlyGet,params}=require('../lib/http');
+const {send,onlyGet,params,privateFeed}=require('../lib/http');
 module.exports=async (req,res)=>{
-  if(!onlyGet(req,res))return;
+  if(!onlyGet(req,res)||!privateFeed(req,res))return;
   const p=params(req),symbol=String(p.get('symbol')||'').toUpperCase();
   const capital=Number(p.get('capital')||100000),risk=Number(p.get('risk')||1);
   if(!/^[A-Z0-9&-]{2,20}$/.test(symbol)||!Number.isFinite(capital)||capital<1000||capital>1e9||!Number.isFinite(risk)||risk<0.1||risk>3) return send(res,400,{status:'error',message:'Invalid symbol/capital/risk'});
@@ -17,6 +17,16 @@ module.exports=async (req,res)=>{
     const score=analyzeDaily(symbol,dailyBars,daily.value.meta);
     const intradayBars=intraday.status==='fulfilled'?intraday.value.bars:[];
     const orb=intradayOrb(intradayBars);
+    // A live trading quote is NOT available in this build: when possible,
+    // use the most recent *completed* five-minute candle as a dated reference.
+    const recent=recentIntradayQuote(intradayBars);
+    if (recent && score) {
+      const previous=score.close;
+      score.price=recent.price;
+      score.priceTime=recent.priceTime;
+      score.changePct=previous ? Number(((recent.price/previous-1)*100).toFixed(2)) : null;
+      score.note='Reference price from a completed five-minute Upstox candle, not a live tick.';
+    }
     const plan=makePlan(dailyBars,orb,score,capital,risk);
     send(res,200,{status:intraday.status==='rejected'?'partial':'success',data:{stock,score,
       orb,plan,atr14:atr(dailyBars),marketOpen:isIndianCashSession(),

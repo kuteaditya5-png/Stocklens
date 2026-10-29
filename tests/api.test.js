@@ -9,8 +9,9 @@ test('invalid market, unsupported methods, and malicious symbol are rejected bef
   r=await call(universe,'/api/universe','POST');assert.equal(r.status,405);
   assert.equal(r.json.status,'error');
 });
-test('scan safely handles provider candle failures',async()=>{
-  const original=global.fetch;
+test('scan safely handles Upstox rate limiting without synthetic candles',async()=>{
+  const original=global.fetch, originalToken=process.env.UPSTOX_ACCESS_TOKEN;
+  process.env.UPSTOX_ACCESS_TOKEN='fake-test-token';
   const names=require('../lib/universe').NIFTY_SEED;
   global.fetch=async url=>{
     if(String(url).endsWith('.csv')) return {ok:true,text:async()=>['Company Name,Industry,Symbol,Series,ISIN Code',...names.map(x=>`Example,Finance,${x},EQ,ISI`) ].join('\n')};
@@ -23,6 +24,12 @@ test('scan safely handles provider candle failures',async()=>{
     assert.equal(r.json.data.scanned,12);
     assert.equal(r.json.data.stocks.length,0);
     assert.equal(r.json.data.errors.length,12);
-    assert.ok(r.json.data.errors.every(e=>e.message.includes('Yahoo HTTP 429')));
-  }finally{global.fetch=original;}
+    assert.ok(r.json.data.errors.every(e=>e.message.includes('Upstox HTTP 429')));
+  }finally{global.fetch=original;if(originalToken===undefined)delete process.env.UPSTOX_ACCESS_TOKEN;else process.env.UPSTOX_ACCESS_TOKEN=originalToken;}
+});
+
+test('private scan access key protects API while leaving public membership readable',async()=>{
+  const old=process.env.STOCKLENS_ACCESS_KEY;process.env.STOCKLENS_ACCESS_KEY='very-private-demo-key';
+  try{const r=await call(scan,'/api/scan?market=nifty&batch=0');assert.equal(r.status,401);assert.equal(r.json.code,'STOCKLENS_ACCESS_REQUIRED');assert.equal(r.headers['Cache-Control'],'private, no-store');}
+  finally{if(old===undefined)delete process.env.STOCKLENS_ACCESS_KEY;else process.env.STOCKLENS_ACCESS_KEY=old;}
 });
