@@ -1,6 +1,7 @@
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
+const Market=window.StockLensMarket;
 const f=new Intl.NumberFormat('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const n=x=>typeof x==='number'&&Number.isFinite(x)?f.format(x):'—';
 const istDate=t=>new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',dateStyle:'medium',timeStyle:'short'}).format(new Date(t));
@@ -18,7 +19,7 @@ async function loadJson(){
   let key='';try{key=sessionStorage.getItem('stocklens_access_key')||''}catch{}
   for(let attempt=0;attempt<2;attempt++){
     const headers=key?{'x-stocklens-access':key}:{};
-    const response=await fetch('/api/index',{headers,cache:'no-store'});
+    const response=await fetch('/api/index?market='+encodeURIComponent(Market.id()),{headers,cache:'no-store'});
     let doc;
     try{doc=await response.json()}catch{throw Error('Index service returned an unreadable response');}
     if(response.status===401&&doc?.code==='STOCKLENS_ACCESS_REQUIRED'){
@@ -87,10 +88,10 @@ function chartSvg(bars,orb,levels,events=[]){
   }
   const stamp=t=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t*1000));
   [0,.25,.5,.75,1].forEach(p=>{const i=Math.min(barsShow.length-1,Math.round((barsShow.length-1)*p));const x=left+step*(i+.5);elements.push(`<text x="${x.toFixed(2)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#7890aa">${stamp(barsShow[i].t)}</text>`)});
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="NIFTY 50 5-minute OHLC candles, green means close at or above open, red means close below open">${elements.join('')}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Selected index five-minute OHLC candles, green means close at or above open, red means close below open">${elements.join('')}</svg>`;
 }
 function render(d){
-  $('lastPrice').textContent=n(d.last);
+  $('lastPrice').textContent=n(d.last);document.title='StockLens — '+Market.name()+' Intraday';
   $('priceChange').textContent=d.change==null?'Prior-day change unavailable':`${d.change>=0?'+':''}${n(d.change)} (${d.changePct>=0?'+':''}${n(d.changePct)}%) vs prior close`;
   $('priceChange').className='price-delta'+(d.change>0?' positive':d.change<0?' negative':'');
   $('asOf').textContent=d.asOf?`Last completed candle: ${istDate(d.asOf)}`:'No completed candles';
@@ -125,15 +126,33 @@ function render(d){
   $('setupStatus').textContent=d.setup?`${d.setup.optionSide} direction · ${d.setup.state} · ${istDate(d.setup.candleTime)}`:'No active completed-candle setup';
   $('optionSideHint').textContent=d.setup?`Index ${d.setup.direction==='UP'?'bullish':'bearish'}: evaluate ${d.setup.optionSide} option separately, not an automatic BUY.`:'Option contract requires independent chain confirmation.';
   if(d.warnings?.length)note(d.warnings.join(' '));
-  else if(!d.isCurrentSession)note('Displaying the last available NIFTY 50 trading session. These are historical candles, not a live intraday signal.',true);
+  else if(!d.isCurrentSession)note('Displaying the last available '+Market.name()+' trading session. These are historical candles, not a live intraday signal.',true);
   else if(!d.fresh)note('The latest completed candle is not fresh. Index signals are disabled until newer candles arrive.',true);
   else note('');
 }
-let busy=false;
-async function refresh(){if(busy)return;busy=true;$('refreshBtn').disabled=true;$('refreshSymbol').textContent='◌';
-  try{render(await loadJson())}catch(e){note('Unable to load NIFTY 50 index candles: '+e.message);$('chart').innerHTML='<div class="chart-placeholder">No verified candle data available. Check your Upstox token in Vercel and refresh.</div>';$('signal').textContent='DATA UNAVAILABLE';}
-  finally{busy=false;$('refreshBtn').disabled=false;$('refreshSymbol').textContent='↻';}
+let generation=0;
+async function refresh(){const g=++generation,selected=Market.id();$('refreshBtn').disabled=true;$('refreshSymbol').textContent='◌';
+  $('chart').innerHTML='<div class="chart-placeholder">Loading '+Market.name()+' completed candles…</div>';
+  $('signal').textContent='LOADING';
+  try{const data=await loadJson();if(g===generation&&selected===Market.id())render(data);}
+  catch(e){if(g===generation){note('Unable to load '+Market.name()+' index candles: '+e.message);$('chart').innerHTML='<div class="chart-placeholder">No verified candle data available. Check your Upstox token in Vercel and refresh.</div>';$('signal').textContent='DATA UNAVAILABLE';}}
+  finally{if(g===generation){$('refreshBtn').disabled=false;$('refreshSymbol').textContent='↻';}}
 }
+
+Market.init(()=>{
+  document.title='StockLens — '+Market.name()+' Intraday';
+  // Hide all previous-index values immediately, before the new API responds.
+  for(const id of ['lastPrice','sessionHigh','sessionLow','sessionOpen','prevClose','sessionDate',
+    'bias','orHigh','orLow','orbStatus','ema9','ema21','rsi14','entryLevel','stopLevel','targetOne','targetTwo','candlesCount'])$(id).textContent='—';
+  $('priceChange').textContent='Loading '+Market.name()+'…';
+  $('setupStatus').textContent='Loading '+Market.name()+' confirmed setups…';
+  $('scenarioTag').textContent='AWAITING CONFIRMATION';
+  $('optionSideHint').textContent='Option contract requires independent chain confirmation.';
+  $('asOf').textContent='Waiting for completed '+Market.name()+' candles';
+  $('feedNote').textContent='Switching to '+Market.name()+' verified Upstox data.';
+  $('orbExplain').textContent='Opening range pending.';
+  refresh();
+});
 $('refreshBtn').addEventListener('click',refresh);
 localClock();setInterval(localClock,30000);
 setInterval(()=>{if(localClock()&&!document.hidden)refresh()},60000);

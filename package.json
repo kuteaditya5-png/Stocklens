@@ -1,8 +1,8 @@
 {
   "name": "stocklens-india-daytrader",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
-  "description": "NIFTY 50 five-minute index desk with four-way closed-candle breakout/reversal signals and a read-only NIFTY CE/PE option advisor",
+  "description": "NIFTY 50 and SENSEX index desk with matched ORB, reversals, backtesting, and read-only option advisor",
   "scripts": {
     "dev": "node dev-server.js",
     "build": "node scripts/build.js",

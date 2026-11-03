@@ -1,3 +1,28 @@
+## NEW in v1.6 — NIFTY 50 / SENSEX market dropdown
+
+StockLens uses one shared strategy across **NIFTY 50** and **BSE SENSEX**, with separate underlying prices and option contract data. Select the market from the **INDEX** dropdown on any of the three main pages. Your selection is remembered and preserved between the Intraday, CE/PE Advisor and Backtest pages. URLs accept `?market=nifty` or `?market=sensex`. Invalid index codes receive HTTP 400, not an unintended different market.
+
+- `/` — five-minute completed-candle index chart; 15-minute ORB, breakdown, failed-break bullish/bearish reversals; locked entry/stop/1R/2R index-point overlays and indicators.
+- `/backtest.html` — identical original 15-minute ORB backtest for either index. This historical engine **does not yet backtest failed-break reversals or option premium P&L**.
+- `/option-advisor.html` — exchange-specific options (NIFTY `NSE_FO`, SENSEX `BSE_FO`) using current-week Upstox option chain, contract metadata and completed option five-minute candles. A +35 **premium-point** target is an unverified scenario screen, **not a guarantee**. The advisor returns WAIT for unqualified/stale inputs.
+
+Official index keys: `NSE_INDEX|Nifty 50` and `BSE_INDEX|SENSEX`. Lot sizes, expiries, strike intervals and quotes come from Upstox, never hard-coded. BSE Sensex data availability depends on your authenticated Upstox permissions and market feed. No real broker credentials have been used in automated tests; connectivity and the BSE options chain must still be verified on your Vercel deployment. There are no automatic orders.
+
+### Updating in Termux
+
+```sh
+cd ~/stocklens-india
+unzip -o ~/storage/downloads/StockLens_SENSEX_NIFTY_Dropdown_Patch_v1.6.zip -d .
+npm test && npm run build
+git add -A
+git commit -m "Add SENSEX index selector and option research v1.6"
+git push origin main
+```
+
+Your existing Vercel `UPSTOX_ACCESS_TOKEN` and optional `STOCKLENS_ACCESS_KEY` are unchanged.
+
+---
+
 # StockLens India v1.5 — Breakout, Breakdown & Reversal Signals (+35 CE/PE research)
 
 **This patch upgrades the existing v1.3 GitHub version through the v1.4 option-advisor code.** It is not NIFTY AI and does not place trades.

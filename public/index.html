@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a1020"><meta name="description" content="NIFTY 50 index intraday five-minute technical analysis powered by Upstox candles.">
-<title>StockLens — NIFTY 50 Intraday</title>
+<title>StockLens — NIFTY / SENSEX Intraday</title>
 <link rel="stylesheet" href="/index-intraday.css">
+<script src="/market-selector.js" defer></script>
 <script src="/index-intraday.js" defer></script>
 </head>
 <body>
@@ -12,27 +13,27 @@
 <aside class="sidebar">
   <a class="brand" href="/" aria-label="StockLens home"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / INDEX DESK</small></span></a>
   <div class="nav-caption">WORKSPACE</div>
-  <a class="nav-link current" href="/" aria-current="page"><span class="nav-icon">▥</span>NIFTY 50 Intraday<span class="nav-count">5m</span></a>
+  <a class="nav-link current" href="/" aria-current="page"><span class="nav-icon">▥</span><span data-market-name>NIFTY 50</span> Intraday<span class="nav-count">5m</span></a>
   <a class="nav-link" href="/option-advisor.html"><span class="nav-icon">⌖</span>CE/PE Option Advisor<span class="nav-count">+35</span></a>
   <a class="nav-link" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest<span class="nav-count">NEW</span></a>
   <a class="nav-link" href="/stocks.html"><span class="nav-icon">☷</span>Constituent Stocks<span class="arrow">↗</span></a>
-  <div class="sidebar-tip"><span class="dot"></span><b>Index spot analysis</b><p>NIFTY 50 is an index, not a stock. This page tracks index points; it does not price options.</p></div>
+  <div class="sidebar-tip"><span class="dot"></span><b>Index spot analysis</b><p>The selected index is not a stock. This page tracks index points; it does not price options.</p></div>
   <div class="sidebar-foot">READ-ONLY RESEARCH<br>UPSTOX V3 CANDLE FEED</div>
 </aside>
 <main class="main">
- <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Index Intraday</strong></div><div class="topright"><span id="marketBadge" class="market-pill">CHECKING SESSION</span><span id="clock" class="clock">—</span><span class="avatar">SL</span></div></header>
+ <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Index Intraday</strong></div><div class="topright"><label class="market-select-label" for="marketSelect">INDEX <select id="marketSelect" aria-label="Select index for intraday, options and backtest"><option value="nifty">NIFTY 50</option><option value="sensex">SENSEX</option></select></label><span id="marketBadge" class="market-pill">CHECKING SESSION</span><span id="clock" class="clock">—</span><span class="avatar">SL</span></div></header>
  <div class="main-inner">
-  <section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> INDIA MARKETS · INDEX TECHNICALS</div><h1>NIFTY 50 <span>Intraday</span></h1><p>Track the index itself with completed 5-minute candles, opening-range levels and intraday momentum.</p></div><button id="refreshBtn" class="btn btn-blue"><span id="refreshSymbol">↻</span> Refresh candles</button></section>
+  <section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> INDIA MARKETS · INDEX TECHNICALS</div><h1><span data-market-name>NIFTY 50</span> <span>Intraday</span></h1><p>Track the index itself with completed 5-minute candles, opening-range levels and intraday momentum.</p></div><button id="refreshBtn" class="btn btn-blue"><span id="refreshSymbol">↻</span> Refresh candles</button></section>
   <div id="notice" class="notice" hidden role="alert"></div>
-  <section class="overview" aria-label="NIFTY 50 current index values">
-    <div class="card price-card"><div class="card-eyebrow">NIFTY 50 · NSE_INDEX</div><div class="big-price" id="lastPrice">—</div><div class="price-delta" id="priceChange">Waiting for Upstox…</div><div class="price-footer"><span class="dot"></span><span id="asOf">Latest completed 5-minute candle</span></div></div>
+  <section class="overview" aria-label="index current values">
+    <div class="card price-card"><div class="card-eyebrow"><span data-market-name>NIFTY 50</span> · <span data-market-exchange>NSE_INDEX</span></div><div class="big-price" id="lastPrice">—</div><div class="price-delta" id="priceChange">Waiting for Upstox…</div><div class="price-footer"><span class="dot"></span><span id="asOf">Latest completed 5-minute candle</span></div></div>
     <div class="card status-card"><div class="card-eyebrow">INTRADAY BIAS</div><div id="bias" class="status-val">—</div><div class="small-muted">From 09:15–09:30 opening range</div><div class="thin-divider"></div><div id="signal" class="signal-pill">NO DATA</div></div>
     <div class="card"><div class="card-eyebrow">SESSION HIGH</div><div id="sessionHigh" class="metric-value">—</div><div class="small-muted">Completed 5m candles</div><div class="thin-divider"></div><div class="card-eyebrow">SESSION LOW</div><div id="sessionLow" class="metric-value alt">—</div></div>
     <div class="card"><div class="card-eyebrow">SESSION OPEN</div><div id="sessionOpen" class="metric-value">—</div><div class="small-muted">Previous close: <span id="prevClose">—</span></div><div class="thin-divider"></div><div class="card-eyebrow">TRADING DATE</div><div class="date-value" id="sessionDate">—</div></div>
   </section>
   <section class="content-grid">
-   <div class="chart-card card"><div class="section-head"><div><div class="eyebrow eyebrow-compact">PRICE ACTION</div><h2>NIFTY 50 · 5-minute candles</h2><p>Only completed candles · prices are index points, not option premiums.</p></div><span class="chip">5 MIN <i></i> UPSTOX</span></div>
-     <div id="chart" class="chart" aria-label="NIFTY 50 five-minute price chart"><div class="chart-placeholder">Fetching authenticated Upstox candles…</div></div>
+   <div class="chart-card card"><div class="section-head"><div><div class="eyebrow eyebrow-compact">PRICE ACTION</div><h2><span data-market-name>NIFTY 50</span> · 5-minute candles</h2><p>Only completed candles · prices are index points, not option premiums.</p></div><span class="chip">5 MIN <i></i> UPSTOX</span></div>
+     <div id="chart" class="chart" aria-label="index five-minute price chart"><div class="chart-placeholder">Fetching authenticated Upstox candles…</div></div>
      <div class="legend"><span><i class="legend-green"></i> Up candle</span><span><i class="legend-red"></i> Down candle</span><span><i class="legend-blue"></i> Opening range levels</span><span><i class="legend-gold"></i> Locked index entry / stop / targets</span><span>REV = Failed-break reversal</span></div>
    </div>
    <div class="right-stack">
@@ -41,10 +42,10 @@
    </div>
   </section>
   <section class="bottom-grid">
-   <div class="card levels-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">REFERENCE SCENARIO</div><h2>Locked index signal levels</h2></div><span id="scenarioTag" class="chip">AWAITING CONFIRMATION</span></div><div class="setup-meta" id="setupStatus">No active completed-candle setup</div><div class="levels-grid"><div><span>Reference entry</span><strong id="entryLevel">—</strong></div><div><span>Invalidation / stop</span><strong id="stopLevel">—</strong></div><div><span>Target 1 · 1R</span><strong id="targetOne">—</strong></div><div><span>Target 2 · 2R</span><strong id="targetTwo">—</strong></div></div><div id="optionSideHint" class="setup-meta">Option contract requires independent chain confirmation.</div><p class="fine-print">Conditional spot-index point levels only. <b>NIFTY spot cannot be bought or sold directly.</b> NIFTY futures or CE/PE options need their own contract quotes, lot sizes, risks and execution rules. <a class="advisor-inline" href="/option-advisor.html">Check CE/PE option +35 screen →</a></p></div>
+   <div class="card levels-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">REFERENCE SCENARIO</div><h2>Locked index signal levels</h2></div><span id="scenarioTag" class="chip">AWAITING CONFIRMATION</span></div><div class="setup-meta" id="setupStatus">No active completed-candle setup</div><div class="levels-grid"><div><span>Reference entry</span><strong id="entryLevel">—</strong></div><div><span>Invalidation / stop</span><strong id="stopLevel">—</strong></div><div><span>Target 1 · 1R</span><strong id="targetOne">—</strong></div><div><span>Target 2 · 2R</span><strong id="targetTwo">—</strong></div></div><div id="optionSideHint" class="setup-meta">Option contract requires independent chain confirmation.</div><p class="fine-print">Conditional spot-index point levels only. <b>An index cannot be bought or sold directly.</b> Futures or CE/PE options need their own contract quotes, lot sizes, risks and execution rules. <a class="advisor-inline" href="/option-advisor.html">Check CE/PE option +35 screen →</a></p></div>
    <div class="card focus-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">MARKET STATUS</div><h2>Data integrity</h2></div></div><div class="focus-row"><span>Source</span><strong>Upstox V3</strong></div><div class="focus-row"><span>Candle interval</span><strong>5 minutes</strong></div><div class="focus-row"><span>Completed bars</span><strong id="candlesCount">—</strong></div><div class="focus-row"><span>Freshness</span><strong id="freshness">—</strong></div><div id="feedNote" class="explain muted">No fabricated prices or signals.</div></div>
   </section>
-  <footer><span>StockLens India v1.5 · Four-scenario Index Desk</span><span>Educational analysis only · No live orders · Verify with broker</span></footer>
+  <footer><span>StockLens India v1.6 · Four-scenario Index Desk</span><span>Educational analysis only · No live orders · Verify with broker</span></footer>
  </div>
 </main>
 </div>

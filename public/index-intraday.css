@@ -6,3 +6,12 @@
 .advisor-inline{display:inline-block;margin-left:6px;color:#5bbbfa;font-weight:800;text-decoration:underline;text-underline-offset:3px}
 .legend-gold{background:#f6c46e}
 @media(max-width:690px){.setup-meta{font-size:10px}.advisor-inline{display:block;margin-top:7px}}
+
+/* v1.6 index switcher - always visible on mobile */
+.market-select-label{display:flex;flex-direction:column;gap:4px;font-size:9px;letter-spacing:1px;color:#9fb7d2;font-weight:850;white-space:nowrap}
+.market-select-label select{background:#172d46;border:1px solid #3f7eab;border-radius:9px;padding:10px 28px 10px 13px;color:#e6f5ff;font-weight:850;letter-spacing:.25px;font-size:13px;max-width:175px}
+.market-select-label select:focus-visible{outline:2px solid #7ed1ff;outline-offset:2px}
+.nav-link [data-market-name]{white-space:nowrap}
+@media(max-width:690px){.topbar{gap:6px}.topright{margin-left:auto;gap:6px}.market-select-label select{max-width:148px;padding:8px;font-size:12px}.market-select-label{font-size:8px}.market-pill{font-size:8px;padding:7px}.nav-link [data-market-name]{display:none}}
+
+@media(max-width:480px){.topbar .crumb{display:none}.topright{width:100%;justify-content:space-between}.market-pill{max-width:142px;text-align:center;white-space:normal}}
