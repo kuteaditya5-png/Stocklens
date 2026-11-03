@@ -13,6 +13,7 @@
   <a class="brand" href="/" aria-label="StockLens home"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / INDEX DESK</small></span></a>
   <div class="nav-caption">WORKSPACE</div>
   <a class="nav-link current" href="/" aria-current="page"><span class="nav-icon">▥</span>NIFTY 50 Intraday<span class="nav-count">5m</span></a>
+  <a class="nav-link" href="/option-advisor.html"><span class="nav-icon">⌖</span>CE/PE Option Advisor<span class="nav-count">+35</span></a>
   <a class="nav-link" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest<span class="nav-count">NEW</span></a>
   <a class="nav-link" href="/stocks.html"><span class="nav-icon">☷</span>Constituent Stocks<span class="arrow">↗</span></a>
   <div class="sidebar-tip"><span class="dot"></span><b>Index spot analysis</b><p>NIFTY 50 is an index, not a stock. This page tracks index points; it does not price options.</p></div>
@@ -32,7 +33,7 @@
   <section class="content-grid">
    <div class="chart-card card"><div class="section-head"><div><div class="eyebrow eyebrow-compact">PRICE ACTION</div><h2>NIFTY 50 · 5-minute candles</h2><p>Only completed candles · prices are index points, not option premiums.</p></div><span class="chip">5 MIN <i></i> UPSTOX</span></div>
      <div id="chart" class="chart" aria-label="NIFTY 50 five-minute price chart"><div class="chart-placeholder">Fetching authenticated Upstox candles…</div></div>
-     <div class="legend"><span><i class="legend-green"></i> Up candle</span><span><i class="legend-red"></i> Down candle</span><span><i class="legend-blue"></i> Opening range levels</span></div>
+     <div class="legend"><span><i class="legend-green"></i> Up candle</span><span><i class="legend-red"></i> Down candle</span><span><i class="legend-blue"></i> Opening range levels</span><span><i class="legend-gold"></i> Locked index entry / stop / targets</span><span>REV = Failed-break reversal</span></div>
    </div>
    <div class="right-stack">
       <div class="card range-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">BREAKOUT TRACKER</div><h2>Opening range</h2></div><span class="chip">09:15–09:30</span></div><div class="level"><span>Range high</span><strong id="orHigh">—</strong></div><div class="level"><span>Range low</span><strong id="orLow">—</strong></div><div class="level"><span>Last close vs. range</span><strong id="orbStatus">—</strong></div><div id="orbExplain" class="explain">Waiting for an uninterrupted 15-minute opening range.</div></div>
@@ -40,10 +41,10 @@
    </div>
   </section>
   <section class="bottom-grid">
-   <div class="card levels-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">REFERENCE SCENARIO</div><h2>Index breakout levels</h2></div><span id="scenarioTag" class="chip">AWAITING CONFIRMATION</span></div><div class="levels-grid"><div><span>Reference entry</span><strong id="entryLevel">—</strong></div><div><span>Invalidation / stop</span><strong id="stopLevel">—</strong></div><div><span>Target 1 · 1R</span><strong id="targetOne">—</strong></div><div><span>Target 2 · 2R</span><strong id="targetTwo">—</strong></div></div><p class="fine-print">Conditional spot-index point levels only. <b>NIFTY spot cannot be bought or sold directly.</b> NIFTY futures or CE/PE options need their own contract quotes, lot sizes, risks and execution rules.</p></div>
+   <div class="card levels-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">REFERENCE SCENARIO</div><h2>Locked index signal levels</h2></div><span id="scenarioTag" class="chip">AWAITING CONFIRMATION</span></div><div class="setup-meta" id="setupStatus">No active completed-candle setup</div><div class="levels-grid"><div><span>Reference entry</span><strong id="entryLevel">—</strong></div><div><span>Invalidation / stop</span><strong id="stopLevel">—</strong></div><div><span>Target 1 · 1R</span><strong id="targetOne">—</strong></div><div><span>Target 2 · 2R</span><strong id="targetTwo">—</strong></div></div><div id="optionSideHint" class="setup-meta">Option contract requires independent chain confirmation.</div><p class="fine-print">Conditional spot-index point levels only. <b>NIFTY spot cannot be bought or sold directly.</b> NIFTY futures or CE/PE options need their own contract quotes, lot sizes, risks and execution rules. <a class="advisor-inline" href="/option-advisor.html">Check CE/PE option +35 screen →</a></p></div>
    <div class="card focus-card"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">MARKET STATUS</div><h2>Data integrity</h2></div></div><div class="focus-row"><span>Source</span><strong>Upstox V3</strong></div><div class="focus-row"><span>Candle interval</span><strong>5 minutes</strong></div><div class="focus-row"><span>Completed bars</span><strong id="candlesCount">—</strong></div><div class="focus-row"><span>Freshness</span><strong id="freshness">—</strong></div><div id="feedNote" class="explain muted">No fabricated prices or signals.</div></div>
   </section>
-  <footer><span>StockLens India v1.3 · NIFTY 50 Index Desk</span><span>Educational analysis only · No live orders · Verify with broker</span></footer>
+  <footer><span>StockLens India v1.5 · Four-scenario Index Desk</span><span>Educational analysis only · No live orders · Verify with broker</span></footer>
  </div>
 </main>
 </div>

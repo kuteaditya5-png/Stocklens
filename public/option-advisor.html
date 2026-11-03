@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1020"><title>StockLens — NIFTY CE/PE Option Advisor</title>
+<link rel="stylesheet" href="/index-intraday.css"><link rel="stylesheet" href="/option-advisor.css">
+<script src="/option-advisor.js" defer></script></head><body>
+<div class="frame"><aside class="sidebar">
+<a class="brand" href="/"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / OPTION RESEARCH</small></span></a>
+<div class="nav-caption">WORKSPACE</div>
+<a class="nav-link" href="/"><span class="nav-icon">▥</span>NIFTY 50 Intraday<span class="nav-count">5m</span></a>
+<a class="nav-link current" aria-current="page" href="/option-advisor.html"><span class="nav-icon">⌖</span>CE/PE Option Advisor<span class="nav-count">+35</span></a>
+<a class="nav-link" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest<span class="nav-count">LAB</span></a>
+<a class="nav-link" href="/stocks.html"><span class="nav-icon">☷</span>Constituent Stocks<span class="arrow">↗</span></a>
+<div class="sidebar-tip"><span class="dot"></span><b>Research-only option screen</b><p>Minimum target goal +35 premium points. A target goal is not a verified probable outcome.</p></div>
+<div class="sidebar-foot">NO ORDER EXECUTION<br>UPSTOX OPTION CHAIN</div>
+</aside><main class="main"><header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>CE/PE Advisor</strong></div><div class="topright"><span class="market-pill closed">READ ONLY</span><span class="avatar">SL</span></div></header>
+<div class="main-inner"><section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> NIFTY 50 · LIVE-SESSION SCREEN</div><h1>CE/PE <span>Option Advisor</span></h1><p>Checks confirmed breakouts, breakdowns and failed-break reversals against actual Upstox option contracts, liquidity, Greeks and a hypothetical +35 premium-point scenario.</p></div><button class="btn btn-blue" type="button" id="runBtn">↻ Check option setup</button></section>
+<div id="notice" class="notice" role="status" hidden></div>
+<div class="card advisor-state"><div class="state-top"><div><div class="card-eyebrow">CURRENT RESEARCH VERDICT</div><div class="advisor-verdict" id="verdict">LOADING</div><div class="advisor-explain" id="reason">Checking the authenticated option feed…</div><div class="small-muted" id="indexSignal">No eligible new event</div></div><div class="min-target"><span>Minimum target goal</span><strong>+35</strong><small>option premium points</small></div></div><div class="fine-print" id="asOf">The option chain's exchange quote timestamps are not included in this API response.</div></div>
+<section id="setup" hidden><div class="overview advisor-grid">
+<div class="card"><div class="card-eyebrow">OPTION CONTRACT</div><div class="contract-name" id="contract">—</div><div class="small-muted" id="expiry">—</div></div>
+<div class="card"><div class="card-eyebrow">ASK ENTRY REFERENCE</div><div class="metric-value" id="entry">—</div><div class="small-muted">Not an executable price guarantee</div></div>
+<div class="card"><div class="card-eyebrow">PREMIUM STOP REFERENCE</div><div class="metric-value alt" id="stop">—</div><div class="small-muted" id="rr">—</div></div>
+<div class="card"><div class="card-eyebrow">TARGET GOAL · +35</div><div class="metric-value positive" id="target">—</div><div class="small-muted">Unvalidated scenario, not a forecast</div></div>
+</div><div class="card advisor-details"><div class="section-head mini"><div><div class="eyebrow eyebrow-compact">CONTRACT VALIDATION</div><h2>Market checks and assumptions</h2></div></div><div class="detail-rows" id="details"></div><div class="advice-risk"><strong>Risk and evidence</strong><ul id="warnings"></ul></div></div></section>
+<div class="card advisor-note"><strong>What WAIT means</strong><p>WAIT is expected whenever the market is closed, the latest breakout/breakdown/reversal is not newly confirmed, options data is missing or stale, spreads are wide, or the estimated +35 scenario does not justify the risk. StockLens does not substitute sample prices.</p></div>
+<footer><span>StockLens Option Advisor v1.5 · Research only</span><span>No auto-orders · No guaranteed targets · Verify with broker</span></footer></div></main></div></body></html>

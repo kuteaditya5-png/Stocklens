@@ -1,3 +1,56 @@
+# StockLens India v1.5 — Breakout, Breakdown & Reversal Signals (+35 CE/PE research)
+
+**This patch upgrades the existing v1.3 GitHub version through the v1.4 option-advisor code.** It is not NIFTY AI and does not place trades.
+
+## Four NIFTY 50 completed-candle scenarios
+
+- **BULLISH BREAKOUT**: 5-minute bullish close crosses above the 09:15–09:30 opening range HIGH → evaluate **CE**.
+- **BEARISH BREAKDOWN**: 5-minute bearish close crosses below the opening range LOW → evaluate **PE**.
+- **FAILED BREAKDOWN · BULLISH REVERSAL**: previous completed 5-minute CLOSE is below range LOW, followed by a bullish close recovering above range LOW → evaluate **CE**.
+- **FAILED BREAKOUT · BEARISH REVERSAL**: previous completed 5-minute CLOSE is above range HIGH, followed by a bearish close returning below range HIGH → evaluate **PE**.
+
+Each event is detected only after the confirmation candle closes. Index **entry/stop/target 1 (1R)/target 2 (2R) are locked** to the event bar and do not drift with every refresh; setup status can be NEW / MONITORING / TARGET 2 HIT / STOP HIT / EXPIRED. Index targets are **spot points**, not option-premium targets or executable orders. Chart shows the OR high/low and locked event levels, with BRK / REV CE/PE markers.
+
+At `/option-advisor.html`, the read-only Upstox V2 option chain / contract metadata and V3 completed option candles are used to screen the appropriate CE or PE. Only the **NEW** confirmation event can produce WATCH, and only when an actual contract passes required bid/ask, volume, OI, delta, spread, ATR, freshness, risk/reward and illustrative **minimum +35 premium-point scenario** conditions. Otherwise WAIT. This is an unverified, hypothetical target screen, **not** a forecast or backtested target-hit rate. Quotes have no separately verifiable exchange timestamp in the V2 chain response. Live Upstox account connectivity is NOT tested with credentials.
+
+**Backtest warning:** `/backtest.html` remains the original spot-index ORB continuation-only backtest. It does **not** simulate failed-break reversals or actual CE/PE premiums. No option profitability claim should be inferred.
+
+### Termux upgrade for existing v1.3
+
+```bash
+cd ~/stocklens-india
+unzip -o ~/storage/downloads/StockLens_Reversals_CEPE_Patch_v1.5.zip -d .
+npm test && npm run build
+git add -A
+git commit -m "StockLens v1.5 breakout and failed-break reversals"
+git push origin main
+```
+
+Routes: `/` for NIFTY index chart, `/option-advisor.html` for real option-contract opportunity screening, `/backtest.html` for original historical index strategy.
+
+---
+
+## NEW in v1.4 — NIFTY CE/PE Option Advisor (+35 Premium Points)
+
+StockLens now includes `/option-advisor.html` and protected `GET /api/option-advisor`. This is an **independent, read-only research screen** connected to the existing NIFTY 50 intraday opening-range breakout engine. It does NOT change the underlying index signal or historical spot backtest.
+
+When a **new, completed** 5-minute candle closes outside the 09:15–09:30 IST opening range, StockLens uses Upstox authenticated APIs:
+- **V2 Put/Call Option Chain**: bid, ask, volume, open interest, option Greeks, strike and expiry (`expiry_date=current_week`).
+- **V2 Option Contracts**: identifies the exact exchange instrument and broker-reported lot and tick size, never a hard-coded lot.
+- **V3 Intraday Historical Candles**: completed 5-minute candles for the short-listed option contracts, used for the ATR-based hypothetical stop.
+
+The chain must have the same expiry and an underlying spot price consistent with the completed index candle. Candidates require positive bid/ask, reasonable spread, liquidity, appropriate delta, and consistent contract metadata. The proposed reference **entry is the current ask**, reference **premium target 1 >= entry + 35**, and stop is based on option five-minute ATR, spread and a minimum premium percentage. Reward:risk must be at least 1.5:1. Target 2 of +50 is shown only when the same hypothetical scenario supports it.
+
+**Critical limitation:** +35 is a **goal**, not a forecast or a measured probability of success. The candidate viability check uses a **hypothetical** NIFTY movement of the larger of the 15m opening-range width and three 5m spot ATRs, mapped through option delta and gamma, less the current spread and illustrative theta decay. This is NOT a statistical price target or an empirically validated return estimate. The V2 option-chain response does not provide a per-contract exchange quote timestamp; before acting, compare with the current exchange/broker bid and ask. Historical option-price backtesting would be needed to estimate target-hit likelihood. No live trades or paper orders are placed by this module.
+
+It returns **WAIT** for market closure, stale candles, breakout not newly confirmed, bad liquidity, missing Greeks, invalid expiry, missing current option history, or inability to clear the +35 screen. The current `UPSTOX_ACCESS_TOKEN` and optional `STOCKLENS_ACCESS_KEY` still apply. No extra secrets or APIs are needed.
+
+### Update existing Android Termux installation
+
+Download `StockLens_Option_Advisor_Patch_v1.4.zip`, extract **into** your existing `~/stocklens-india` Git repository, and run `npm test && npm run build`. Push the changes to your existing GitHub repo to redeploy via Vercel. The app requires a valid Upstox access token in Vercel server-side environment variables; credentials are not included in this ZIP.
+
+---
+
 ## NEW in v1.3 — NIFTY 50 Historical Backtest
 
 Open **`/backtest.html`** to replay historical **NIFTY 50 spot-index** 5-minute candles fetched from Upstox V3. Choose past dates (up to 28 calendar days per request, any window back to January 2022) and LONG / SHORT / BOTH. No demo market candles are substituted.

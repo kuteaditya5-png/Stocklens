@@ -32,3 +32,47 @@ test('index provider calls NSE_INDEX directly and never asks for NSE_EQ instrume
  try{const r=await getNiftyIndex(new Date('2026-10-29T09:36:00+05:30'));assert.equal(r.signal,'BULLISH BREAKOUT');assert.equal(calls.length,2);assert.ok(calls.every(u=>u.includes('NSE_INDEX%7CNifty%2050')));}
  finally{global.fetch=fetchOld;if(old===undefined)delete process.env.UPSTOX_ACCESS_TOKEN;else process.env.UPSTOX_ACCESS_TOKEN=old;}
 });
+
+// v1.5: confirm both continuation and trap/reversal scenarios with *closed* 5m candles.
+test('failed breakdown becomes bullish reversal CE scenario with stop below trap wick',()=>{
+ const base=[...mock.slice(0,3),line('09:30',24590,24595,24515,24520),
+    line('09:35',24520,24585,24510,24565)];
+ const d=computeNiftySession(base,daily,new Date('2026-10-29T09:41:00+05:30'));
+ assert.equal(d.signal,'FAILED BREAKDOWN · BULLISH REVERSAL');
+ assert.equal(d.setup.optionSide,'CE');assert.equal(d.setup.state,'NEW');
+ assert.equal(d.levels.entry,24565);assert.equal(d.levels.stop,24510);
+ assert.equal(d.levels.target1,24620);assert.equal(d.events.length,2);
+ assert.equal(d.events[0].name,'BEARISH BREAKDOWN');
+});
+test('failed breakout becomes bearish reversal PE scenario with stop above trap wick',()=>{
+ const bars=[...mock,line('09:35',24610,24625,24555,24580)];
+ const d=computeNiftySession(bars,daily,new Date('2026-10-29T09:41:00+05:30'));
+ assert.equal(d.signal,'FAILED BREAKOUT · BEARISH REVERSAL');
+ assert.equal(d.setup.optionSide,'PE');assert.equal(d.setup.state,'NEW');
+ assert.equal(d.levels.entry,24580);assert.equal(d.levels.stop,24625);
+ assert.equal(d.levels.target1,24535);
+});
+test('first breakout reference remains locked after later candle, option signal is not new',()=>{
+ const bars=[...mock,line('09:35',24610,24635,24605,24625)];
+ const d=computeNiftySession(bars,daily,new Date('2026-10-29T09:41:00+05:30'));
+ assert.equal(d.signal,'BULLISH BREAKOUT');
+ assert.equal(d.levels.entry,24610);assert.equal(d.setup.state,'MONITORING');
+ assert.equal(d.setup.isNew,false);
+});
+test('signal is not emitted early while reversal candle is still forming',()=>{
+ const bars=[...mock,line('09:35',24610,24625,24555,24580)];
+ const d=computeNiftySession(bars,daily,new Date('2026-10-29T09:38:30+05:30'));
+ assert.equal(d.signal,'BULLISH BREAKOUT');
+ assert.equal(d.candleCount,4);assert.equal(d.events.length,1);
+});
+test('failed-break reversal is in past index events but never live on another day',()=>{
+ const bars=[...mock,line('09:35',24610,24625,24555,24580)];
+ const d=computeNiftySession(bars,daily,new Date('2026-10-30T10:00:00+05:30'));
+ assert.equal(d.signal,'NO LIVE SIGNAL');assert.equal(d.setup,null);assert.equal(d.levels,null);
+ assert.equal(d.events.at(-1).name,'FAILED BREAKOUT · BEARISH REVERSAL');
+});
+test('intrabar support wick without a completed close below range is not a breakdown',()=>{
+ const bars=[...mock.slice(0,3),line('09:30',24590,24600,24500,24565)];
+ const d=computeNiftySession(bars,daily,new Date('2026-10-29T09:36:00+05:30'));
+ assert.equal(d.signal,'WAIT');assert.equal(d.setup,null);
+});

@@ -13,3 +13,19 @@ NIFTY 50 **index spot**, not member stocks, is the default page (`/`). The old s
 **Caution:** Index spot cannot be traded. The displayed spot-point levels are indicative and **not valid entry/stop/targets for NIFTY call or put options**. No automated trades are placed. Upstox's intraday endpoint may delay candles and is not an exchange tick stream.
 
 **Docs:** https://upstox.com/developer/api-documentation/v3/get-intra-day-candle-data/ and https://upstox.com/developer/api-documentation/instrument-search/
+
+## v1.4 — Option Advisor
+
+`/option-advisor.html` reads current NIFTY CE/PE options via the same server-only `UPSTOX_ACCESS_TOKEN`. The protected endpoint is `GET /api/option-advisor`; if `STOCKLENS_ACCESS_KEY` is configured the browser asks for the private scanner access key, as elsewhere in StockLens.
+
+The advisor additionally calls the documented authenticated Upstox API paths:
+
+- `GET /v2/option/chain?instrument_key=NSE_INDEX%7CNifty+50&expiry_date=current_week`
+- `GET /v2/option/contract?instrument_key=NSE_INDEX%7CNifty+50&expiry_date=<returned-expiry>`
+- `GET /v3/historical-candle/intraday/<encoded-option-key>/minutes/5`
+
+Errors, expiries, broker-reported lot sizes, wide spreads, missing data, and insufficient target scenarios all lead to an explicit WAIT/ERROR instead of invented quotes. See README.md for the limitations of the +35 premium-point objective. Live authenticated integration was NOT run with an account token during offline testing.
+
+## v1.5 — Reversal-aware signals
+
+The four NEW index events are bullish ORB breakout (CE direction), bearish ORB breakdown (PE), failed breakdown with bullish support reclaim (CE), and failed breakout with bearish resistance loss (PE). Index levels are frozen at the confirming completed candle. The Upstox option advisor only screens on that NEW bar; when the index event is old, WAIT is expected. A +35 premium-point screen is a hypothetical selection rule, not a guaranteed or statistically measured result. The existing spot-only backtest does not evaluate reversals or option premiums.
