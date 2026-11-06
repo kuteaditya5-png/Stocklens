@@ -33,3 +33,15 @@
 .rolling-table tr:last-child td{border-bottom:0}.rolling-up{color:#57dbb5!important}.rolling-down{color:#ff9ca8!important}
 @media(max-width:900px){.rolling-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.rolling-grid{gap:7px}.rolling-grid>div{padding:10px}.rolling-grid strong{font-size:16px}.rolling-watch{padding:16px 12px}.rolling-alert-button{margin-bottom:8px}}
+
+
+/* v1.8 historical evidence, index 1R / 2R rates. */
+.target-evidence{margin-top:20px;border-color:#35516b}
+.target-evidence .section-head{flex-wrap:wrap}
+.target-evidence-setup{font-size:12px;color:#b5d9f1;line-height:1.7;background:#192d42;border:1px solid #2e5271;border-radius:8px;padding:12px;margin-bottom:12px}
+.target-evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.target-evidence-grid>div{padding:16px;border:1px solid #2b4963;border-radius:9px;background:#0d2239}
+.target-evidence-grid small{display:block;color:#90b5ce;font-size:10px;font-weight:800;letter-spacing:.75px}
+.target-evidence-grid strong{display:block;color:#b6f0d8;font-size:30px;letter-spacing:-.6px;margin:8px 0}
+.target-evidence-grid span{display:block;color:#8da8bf;font-size:10px;line-height:1.6}
+@media(max-width:650px){.target-evidence-grid{grid-template-columns:1fr 1fr}.target-evidence-grid>div:last-child{grid-column:span 2}.target-evidence-grid strong{font-size:24px}}

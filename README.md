@@ -1,3 +1,29 @@
+# StockLens v1.8 — Historical T1/T2 evidence for NIFTY 50 and SENSEX
+
+**What this build adds:** After a confirmed five-minute opening-range or rolling-six-candle breakout, breakdown, or failed-break reversal, the Intraday dashboard can show **historical Target 1 (1R) and Target 2 (2R) touch-before-stop rates** for the **same pattern and selected index**. These are **not forecast probabilities**. The rate is `historical matches reaching target within six subsequent completed five-minute bars before touching the stop ÷ total historical matches`.
+
+- Reads **112 prior calendar days** of real Upstox V3 index five-minute OHLC in four **28-day chunks**, ending **yesterday**. No current-day candles feed the historical denominator. Historical access requires your existing server-side `UPSTOX_ACCESS_TOKEN`, and optional `STOCKLENS_ACCESS_KEY` protects the API.
+- Only full regular sessions with all **75 consecutive five-minute candles** are counted. Signals lacking a six-candle forward observation window are excluded. A stop and target touched within one five-minute bar are counted conservatively as a **stop first**. Both rates use the same historical sample group.
+- Percentages appear only when there are **at least 30 matching historical events** for the same exact setup type and market; otherwise the dashboard shows **— / insufficient sample**, not a made-up percentage. Sample counts, observation dates, approximate Wilson 95% intervals and data errors are visible. Overlapping signals and shifting market conditions mean intervals cannot be interpreted as calibrated forecasts.
+- A new **Target Evidence** card appears under the rolling six-candle watch. It fetches history when there is a confirmed event, caches upstream data for up to six hours per warm serverless instance, and has a manual Load History/Retry button.
+- Fixes a **v1.7 HTML integration omission**: the rolling-watch panel IDs were referenced in JavaScript without being present in `public/index.html`.
+- Keeps the existing NIFTY/SENSEX dropdown, rolling level scanner, reversal journal, historical ORB backtest, and separate CE/PE advisor. **T1/T2 here are SPOT INDEX points**: the +35 **CE/PE premium-point** target from the Options Advisor needs separate historical option-price testing. These historical rates never place an order.
+
+**New read-only endpoint:** `GET /api/target-stats?market=nifty` (or `sensex`). Returns per-pattern sample counts and empirical rates. The first request can take longer while Upstox historical data is downloaded. If it fails, the UI reports unavailable rather than substituting synthetic values. The test suite mocks requests and does not confirm live Upstox behaviour.
+
+**Updating with Termux:** Copy `StockLens_v1.8_Historical_Target_Rates_Patch.zip` to Downloads and run:
+
+```sh
+cd ~/stocklens-india
+unzip -o ~/storage/downloads/StockLens_v1.8_Historical_Target_Rates_Patch.zip -d .
+npm test && npm run build
+git add -A
+git commit -m "StockLens v1.8 historical target hit rates"
+git push origin main
+```
+
+---
+
 # NEW in v1.7 — Intraday rolling 6-candle breakout & reversal scanner
 
 **Main dashboard:** `/` and `/?market=sensex` — use NIFTY 50 / SENSEX dropdown. The opening-range scanner is preserved, and a second scanner watches the prior six completed five-minute candles for breakouts, breakdowns and failed-break reversals. It shows moving watch levels, a deduplicated event journal, and locked *spot-index* entry/stop/1R/2R references. A strong completed candle is required before a NEW signal.

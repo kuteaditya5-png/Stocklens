@@ -138,6 +138,75 @@ $('enableAlerts').addEventListener('click',async()=>{
   const status=await Notification.requestPermission();
   b.textContent=status==='granted'?'Browser notifications enabled (while open)':'Notifications '+status;
 });
+const historicalEvidence=new Map();
+const percent=x=>typeof x==='number'&&Number.isFinite(x)?x.toFixed(1)+'%':'—';
+function clearTargetEvidence(){
+  $('targetT1Pct').textContent='—';$('targetT2Pct').textContent='—';
+  $('targetSamples').textContent='—';
+  $('targetT1Interval').textContent='Historical touch-before-stop rate';
+  $('targetT2Interval').textContent='Historical touch-before-stop rate';
+  $('targetSampleWindow').textContent='Minimum 30 comparable events';
+}
+async function loadHistoricalEvidence(marketId,force=false){
+  const state=historicalEvidence.get(marketId);
+  if(!force&&(state?.promise||state?.data))return;
+  if(state?.promise)return;
+  const rec={data:null,error:null,promise:null};
+  historicalEvidence.set(marketId,rec);
+  rec.promise=(async()=>{
+    let key='';try{key=sessionStorage.getItem('stocklens_access_key')||'';}catch{}
+    const response=await fetch('/api/target-stats?market='+encodeURIComponent(marketId),{
+      headers:key?{'x-stocklens-access':key}:{},cache:'no-store'});
+    let payload;
+    try{payload=await response.json();}catch{throw Error('Historical service returned unreadable data');}
+    if(!response.ok)throw Error(payload.message||`Historical API HTTP ${response.status}`);
+    if(!payload.data?.groups)throw Error('Historical sample groups were missing');
+    rec.data=payload.data;
+  })().catch(err=>{rec.error=err.message||'Historical data unavailable';})
+    .finally(()=>{rec.promise=null;renderHistoricalEvidence();});
+}
+let viewedSignal=null;
+function renderHistoricalEvidence(){
+  clearTargetEvidence();
+  const view=viewedSignal;
+  if(!view){$('targetEvidenceSetup').textContent='Waiting for a confirmed completed five-minute setup.';
+    $('targetEvidenceNote').textContent='No target probabilities are generated without a confirmed index signal.';return;}
+  const {marketId,setup,source}=view;
+  const record=historicalEvidence.get(marketId);
+  const type=source+'|'+setup.name;
+  const description=`${Market.name()} · ${source==='ROLLING_6'?'Rolling 6-candle':'Opening range'} · ${setup.name} · ${setup.state||'HISTORICAL'} · Index T1 ${n(setup.target1)} / T2 ${n(setup.target2)}`;
+  $('targetEvidenceSetup').textContent=description;
+  if(!record?.data){
+    $('targetEvidenceNote').textContent=record?.error?
+      `No valid percentages: ${record.error}. Check Upstox token and retry. No artificial rates are supplied.`:
+      'Loading real Upstox five-minute history (112 calendar days). Historical rates will appear only with at least 30 matching completed setups.';
+    return;
+  }
+  const e=record.data.groups[type];
+  if(!e){$('targetEvidenceNote').textContent='No comparable historical setup type returned. Rates unavailable.';return;}
+  $('targetSamples').textContent=String(e.samples);
+  $('targetSampleWindow').textContent=`${record.data.validSessions} full sessions · ${record.data.from} to ${record.data.to}`;
+  if(!e.sufficient){
+    $('targetEvidenceNote').textContent=`Only ${e.samples} matches for this exact pattern; at least ${e.minSamples} needed. Percentages withheld to avoid false precision.`;
+    return;
+  }
+  $('targetT1Pct').textContent=percent(e.t1Rate);
+  $('targetT2Pct').textContent=percent(e.t2Rate);
+  $('targetT1Interval').textContent=`${e.t1Hits}/${e.samples} past setups · approx. 95% interval ${e.t1Wilson95?.map(percent).join('–')||'—'}`;
+  $('targetT2Interval').textContent=`${e.t2Hits}/${e.samples} past setups · approx. 95% interval ${e.t2Wilson95?.map(percent).join('–')||'—'}`;
+  $('targetEvidenceNote').textContent='Historical 30-minute index-point touch-before-stop rates, not live probabilities. Stops counted first on ambiguous candles; past signals may overlap. They do NOT measure CE/PE option-premium profits or guarantee either target.';
+}
+function updateHistoricalEvidence(d,chosen,source){
+  viewedSignal=chosen?{marketId:d.market,setup:chosen,source}:null;
+  renderHistoricalEvidence();
+  if(chosen)loadHistoricalEvidence(d.market);
+}
+$('refreshTargetEvidence').addEventListener('click',()=>{
+  const marketId=Market.id();
+  historicalEvidence.delete(marketId);
+  renderHistoricalEvidence();
+  loadHistoricalEvidence(marketId,true);
+});
 function render(d){
   const rollingEvent=d.rolling?.latest;
   const useRolling=!!(rollingEvent&&(!d.setup||Date.parse(rollingEvent.candleTime)>=Date.parse(d.setup.candleTime)));
@@ -169,6 +238,7 @@ function render(d){
   const overlay=useRolling?rollingEvent:d.levels;
   $('chart').innerHTML=chartSvg(d.candles,d.orb,overlay,d.events,d.rolling);
   renderRolling(d);
+  updateHistoricalEvidence(d,activeSetup,useRolling?'ROLLING_6':'OPENING_RANGE');
   $('candlesCount').textContent=String(d.candleCount);
   $('freshness').textContent=d.fresh?'Fresh completed bar':d.isCurrentSession?'Delayed / stale':'Previous session';
   $('freshness').className=d.fresh?'positive':'negative';
@@ -210,7 +280,7 @@ Market.init(()=>{
   $('rollingBanner').textContent='Switching to '+Market.name()+' rolling levels…';
   $('rollingLatest').textContent='Loading '+Market.name()+' confirmed events…';
   $('rollingRows').innerHTML='<tr><td colspan="8">Loading…</td></tr>';
-  recentSignalId=null;
+  recentSignalId=null;viewedSignal=null;renderHistoricalEvidence();
   refresh();
 });
 $('refreshBtn').addEventListener('click',refresh);
