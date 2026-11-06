@@ -53,5 +53,9 @@ async function load(){const g=++generation,selected=Market.id();$('runBtn').disa
  catch(e){if(g===generation){$('verdict').textContent='DATA UNAVAILABLE';$('verdict').className='advisor-verdict';$('reason').textContent=e.message;$('setup').hidden=true;notice(e.message,true);}}
  finally{if(g===generation)$('runBtn').disabled=false;}}
 Market.init(()=>{document.title='StockLens — '+Market.name()+' CE/PE Advisor';load();});
-$('runBtn').addEventListener('click',load);load();
+$('runBtn').addEventListener('click',load);
+const istTime=()=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+const istDay=()=>new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Kolkata',weekday:'short'}).format(new Date());
+setInterval(()=>{if(!document.hidden&&!['Sat','Sun'].includes(istDay())&&istTime()>='09:15'&&istTime()<'14:45')load()},60000);
+load();
 })();

@@ -15,3 +15,21 @@
 @media(max-width:690px){.topbar{gap:6px}.topright{margin-left:auto;gap:6px}.market-select-label select{max-width:148px;padding:8px;font-size:12px}.market-select-label{font-size:8px}.market-pill{font-size:8px;padding:7px}.nav-link [data-market-name]{display:none}}
 
 @media(max-width:480px){.topbar .crumb{display:none}.topright{width:100%;justify-content:space-between}.market-pill{max-width:142px;text-align:center;white-space:normal}}
+
+/* v1.7 rolling breakout watch and 5m event journal */
+.rolling-watch{margin-bottom:22px;border-color:#326c86;background:linear-gradient(120deg,#142940,#102035)}
+.rolling-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.rolling-grid>div{border:1px solid #294968;background:#0d2237;border-radius:10px;padding:13px;min-width:0}
+.rolling-grid small{display:block;color:#7dabc9;font-size:9px;font-weight:900;letter-spacing:.75px}
+.rolling-grid strong{display:block;font-size:clamp(15px,1.7vw,23px);margin:10px 0 6px;white-space:normal;overflow-wrap:anywhere;color:#ecf7ff}
+.rolling-grid span,.rolling-alert-note{font-size:10px;color:#90aabd;line-height:1.5}
+.rolling-banner{padding:13px;border:1px solid #385875;border-radius:9px;margin:14px 0 11px;background:#1b3047;color:#cbe6ff;font-size:12px;font-weight:650;line-height:1.5}
+.rolling-banner.new{border-color:#3d9d7b;background:#113b33;color:#77ecc1}
+.rolling-alert-button{padding:8px 12px;font-size:11px;color:#badef8;border:1px solid #47789b;background:#14283e;margin-right:10px}
+.rolling-report{margin-top:19px}.rolling-current{background:#1a3045;border:1px solid #34536b;border-radius:8px;padding:12px;color:#bcd9ed;font-size:12px;margin-bottom:13px;line-height:1.6}
+.table-scroll{overflow-x:auto;width:100%}.rolling-table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+.rolling-table th{text-align:left;background:#142437;color:#88b5d2;padding:12px 10px;font-size:9px;letter-spacing:.7px}
+.rolling-table td{padding:11px 10px;color:#d6e8fa;border-bottom:1px solid #263b52}
+.rolling-table tr:last-child td{border-bottom:0}.rolling-up{color:#57dbb5!important}.rolling-down{color:#ff9ca8!important}
+@media(max-width:900px){.rolling-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.rolling-grid{gap:7px}.rolling-grid>div{padding:10px}.rolling-grid strong{font-size:16px}.rolling-watch{padding:16px 12px}.rolling-alert-button{margin-bottom:8px}}

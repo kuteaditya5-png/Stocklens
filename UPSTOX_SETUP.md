@@ -1,3 +1,9 @@
+## v1.7 rolling-six-bar scanning
+
+Rolling watch levels come only from completed five-minute Upstox index candles when live. User-provided Yahoo export is used in offline testing and audit only. Stale candles or expired `UPSTOX_ACCESS_TOKEN` suppress fresh signals. The option advisor now allows a NEW rolling-six-bar event only after actual exchange-specific option chain, option candle, spread, Greeks and hypothetical +35 premium-point checks. WAIT is common. No order execution or background notifications; do not commit tokens.
+
+---
+
 # v1.2 index intraday setup (Upstox)
 
 NIFTY 50 **index spot**, not member stocks, is the default page (`/`). The old stock scanner is `/stocks.html`. To fetch index candles Upstox V3 uses instrument key `NSE_INDEX|Nifty 50` (shown in Upstox's official instrument search documentation). No stock instrument lookup is needed for the index page.

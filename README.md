@@ -1,3 +1,17 @@
+# NEW in v1.7 — Intraday rolling 6-candle breakout & reversal scanner
+
+**Main dashboard:** `/` and `/?market=sensex` — use NIFTY 50 / SENSEX dropdown. The opening-range scanner is preserved, and a second scanner watches the prior six completed five-minute candles for breakouts, breakdowns and failed-break reversals. It shows moving watch levels, a deduplicated event journal, and locked *spot-index* entry/stop/1R/2R references. A strong completed candle is required before a NEW signal.
+
+**Option Advisor:** `/option-advisor.html` now accepts a fresh rolling-six-bar setup as an input in addition to a fresh opening-range event. Only market-specific Upstox option contracts passing liquidity, quotes, Greeks, ATR and hypothetical +35 **premium-point** screening can be WATCH. Missing data or unqualified setup => WAIT. Option premiums are never invented from spot index levels; scenarios are not target probabilities or guarantees.
+
+**November 6 audit:** `analysis/ANALYSIS_2026-11-06.md` and `analysis/2026-11-06_rolling_signal_journal.csv`. The provided workbook contains 40 completed Yahoo Finance NIFTY spot candles ending 12:35 IST. Six algorithmic rolling candidates were detected; there are no option premiums or candles after 12:35. The tests preserve the original OHLC in `tests/fixtures/nifty_2026-11-06_5m.json`.
+
+**Important:** The six-candle journal is not a verified profitable strategy backtest. `/backtest.html` continues its original one-per-day opening-range simulation. The dashboard refreshes every minute while open during Indian trading hours; browser notifications require opt-in and only work while the page is visible. No background polling, push service, WhatsApp or automatic order execution. Keep Upstox token valid.
+
+**Upgrade:** If local code is already v1.6, extract the v1.7 PATCH. If using v1.3 (last GitHub version checked) extract the v1.7 FULL ZIP. Then `npm test && npm run build`, `git add -A`, `git commit -m "StockLens v1.7 rolling six-candle setups"`, `git push origin main`.
+
+---
+
 ## NEW in v1.6 — NIFTY 50 / SENSEX market dropdown
 
 StockLens uses one shared strategy across **NIFTY 50** and **BSE SENSEX**, with separate underlying prices and option contract data. Select the market from the **INDEX** dropdown on any of the three main pages. Your selection is remembered and preserved between the Intraday, CE/PE Advisor and Backtest pages. URLs accept `?market=nifty` or `?market=sensex`. Invalid index codes receive HTTP 400, not an unintended different market.

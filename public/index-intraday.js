@@ -34,13 +34,13 @@ async function loadJson(){
   }
   throw Error('StockLens access key rejected');
 }
-function chartSvg(bars,orb,levels,events=[]){
+function chartSvg(bars,orb,levels,events=[],rolling=null){
   const list=(bars||[]).filter(b=>[b.o,b.h,b.l,b.c].every(Number.isFinite));
   if(!list.length)return '<div class="chart-placeholder">No completed index candles available.</div>';
   const barsShow=list.slice(-75);
   const W=950,H=370,left=14,right=82,top=14,bottom=32;
   const plotW=W-left-right,plotH=H-top-bottom;
-  const extra=[orb?.high,orb?.low,levels?.entry,levels?.stop,levels?.target1,levels?.target2].filter(Number.isFinite);
+  const extra=[orb?.high,orb?.low,levels?.entry,levels?.stop,levels?.target1,levels?.target2,rolling?.levels?.upTrigger,rolling?.levels?.downTrigger].filter(Number.isFinite);
   const vals=[...barsShow.flatMap(b=>[b.h,b.l]),...extra];
   const lo=Math.min(...vals),hi=Math.max(...vals),pad=Math.max(6,(hi-lo)*.075);
   const min=lo-pad,max=hi+pad,span=Math.max(1,max-min);
@@ -63,6 +63,14 @@ function chartSvg(bars,orb,levels,events=[]){
     const yy=y(value);elements.push(`<line x1="${left}" y1="${yy.toFixed(2)}" x2="${W-right}" y2="${yy.toFixed(2)}" stroke="#58b5f4" stroke-width="1.7" stroke-dasharray="7 5"/>`);
     elements.push(`<text x="${W-right-7}" y="${Math.max(13,yy-5).toFixed(2)}" text-anchor="end" fill="#7dc6fb" font-size="10" font-weight="700">${label}</text>`);
   }
+  // Dynamic rolling confirmation thresholds, recomputed only from six completed bars.
+  if(rolling?.watch){
+    for(const [value,label,color] of [[rolling.watch.bullishCloseAbove,'6B UP','#9bc85c'],[rolling.watch.bearishCloseBelow,'6B DN','#dc95ef']]){
+      if(!Number.isFinite(value))continue;
+      const yy=y(value);elements.push(`<line x1="${left}" x2="${W-right}" y1="${yy.toFixed(2)}" y2="${yy.toFixed(2)}" stroke="${color}" stroke-width="1.5" stroke-dasharray="2 7"/>`);
+      elements.push(`<text x="${W-right-7}" y="${Math.max(13,yy-8).toFixed(2)}" text-anchor="end" fill="${color}" font-size="10" font-weight="800">${label} ${value.toFixed(1)}</text>`);
+    }
+  }
   // Level overlays are NIFTY spot-index points only, never option premiums.
   if(levels){
     const fromTime=Date.parse(levels.candleTime||'')/1000-300;
@@ -77,12 +85,12 @@ function chartSvg(bars,orb,levels,events=[]){
     }
   }
   const firstVisible=barsShow[0]?.t;
-  for(const ev of events||[]){
+  for(const ev of [...(events||[]),...(rolling?.events||[])]){
     const time=Date.parse(ev.barStart||'')/1000;
     if(!Number.isFinite(time)||time<firstVisible||time>barsShow.at(-1)?.t)continue;
     const i=Math.round((time-firstVisible)/300),b=barsShow[i];if(!b)continue;
     const xx=left+step*(i+.5),bull=ev.direction==='UP';
-    const label=ev.name.startsWith('FAILED')?(bull?'REV CE':'REV PE'):(bull?'BRK CE':'BRK PE');
+    const label=(ev.source==='ROLLING_6'?'6B ':'')+(ev.name.startsWith('FAILED')?(bull?'REV CE':'REV PE'):(bull?'BRK CE':'BRK PE'));
     const yy=Math.max(top+15,Math.min(top+plotH-14,bull?y(b.l)+20:y(b.h)-12));
     elements.push(`<text x="${xx.toFixed(1)}" y="${yy.toFixed(1)}" text-anchor="middle" fill="${bull?'#5bddae':'#fa98a0'}" font-size="9" font-weight="800">${label}</text>`);
   }
@@ -90,7 +98,51 @@ function chartSvg(bars,orb,levels,events=[]){
   [0,.25,.5,.75,1].forEach(p=>{const i=Math.min(barsShow.length-1,Math.round((barsShow.length-1)*p));const x=left+step*(i+.5);elements.push(`<text x="${x.toFixed(2)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#7890aa">${stamp(barsShow[i].t)}</text>`)});
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Selected index five-minute OHLC candles, green means close at or above open, red means close below open">${elements.join('')}</svg>`;
 }
+const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let recentSignalId=null;
+function renderRolling(d){
+  const roll=d.rolling||{},watch=roll.watch,lev=roll.levels;
+  $('rollingStatus').textContent=roll.status||'NOT LIVE';
+  $('rollingUp').textContent=n(watch?.bullishCloseAbove);
+  $('rollingDown').textContent=n(watch?.bearishCloseBelow);
+  $('rollingRange').textContent=lev?`${n(lev.high)} / ${n(lev.low)}`:'—';
+  $('rollingAsOf').textContent=lev?.asOf?'As of '+istDate(lev.asOf):'No complete 6-bar range';
+  $('rollingCount').textContent=roll.opportunities??'—';
+  const latest=roll.latest;
+  const banner=$('rollingBanner');
+  if(!watch){banner.textContent='No live watch: outside the session, candles delayed, or fewer than six completed bars.';banner.className='rolling-banner';}
+  else if(latest?.state==='NEW'){
+    banner.textContent=`NEW ${latest.optionSide} DIRECTION · ${latest.name} · INDEX confirmation ${n(latest.entry)} (reference only). Check option contract and spread separately.`;
+    banner.className='rolling-banner new';
+    if(recentSignalId!==latest.id){recentSignalId=latest.id;notifyRolling(latest,d.market);}
+  }else{
+    banner.textContent=`NEXT CONFIRMATION: 5m candle must CLOSE above ${n(watch.bullishCloseAbove)} for bullish momentum or below ${n(watch.bearishCloseBelow)} for bearish momentum. Candle body ≥ ${n(watch.minimumCandleBody)} pts and strong close required. Levels can change next bar.`;
+    banner.className='rolling-banner';
+  }
+  $('rollingLatest').textContent=latest?
+    `${latest.name} · ${latest.optionSide} direction · ${latest.state} · confirmed ${istDate(latest.candleTime)} · INDEX entry ${n(latest.entry)} · stop ${n(latest.stop)} · T1 ${n(latest.target1)} · T2 ${n(latest.target2)}. These are spot-index references, NOT option premium targets.`:
+    'No fresh rolling setup. Historical confirmed events are shown below; new CE/PE entry requires separate option quotes.';
+  const events=(roll.events||[]).slice().reverse();
+  $('rollingRows').innerHTML=events.length?events.map(ev=>`<tr><td>${safe(istDate(ev.candleTime))}</td><td class="${ev.direction==='UP'?'rolling-up':'rolling-down'}">${safe(ev.name)}</td><td>${safe(ev.optionSide)}</td><td>${n(ev.entry)}</td><td>${n(ev.stop)}</td><td>${n(ev.target1)}</td><td>${n(ev.target2)}</td><td>${safe(ev.state)}</td></tr>`).join(''):'<tr><td colspan="8">No confirmed rolling setups in the available completed candles.</td></tr>';
+}
+function notifyRolling(ev,market){
+  // Opt-in foreground-only browser notifications, never background surveillance.
+  if(!document.hidden&&'Notification' in window&&Notification.permission==='granted'){
+    try{new Notification(`${market==='sensex'?'SENSEX':'NIFTY 50'} ${ev.optionSide} direction`,{
+      body:`${ev.name} · index reference ${n(ev.entry)} · check contract premiums separately`,tag:`stocklens-${market}-${ev.id}`});}catch{}
+  }
+}
+$('enableAlerts').addEventListener('click',async()=>{
+  const b=$('enableAlerts');
+  if(!('Notification' in window)){b.textContent='Browser notifications not supported — watch this page';return;}
+  const status=await Notification.requestPermission();
+  b.textContent=status==='granted'?'Browser notifications enabled (while open)':'Notifications '+status;
+});
 function render(d){
+  const rollingEvent=d.rolling?.latest;
+  const useRolling=!!(rollingEvent&&(!d.setup||Date.parse(rollingEvent.candleTime)>=Date.parse(d.setup.candleTime)));
+  const activeSetup=useRolling?rollingEvent:d.setup;
+  const activeName=useRolling?rollingEvent.name:d.signal;
   $('lastPrice').textContent=n(d.last);document.title='StockLens — '+Market.name()+' Intraday';
   $('priceChange').textContent=d.change==null?'Prior-day change unavailable':`${d.change>=0?'+':''}${n(d.change)} (${d.changePct>=0?'+':''}${n(d.changePct)}%) vs prior close`;
   $('priceChange').className='price-delta'+(d.change>0?' positive':d.change<0?' negative':'');
@@ -101,8 +153,8 @@ function render(d){
   $('bias').textContent=d.orb.status;
   $('orHigh').textContent=n(d.orb.high);$('orLow').textContent=n(d.orb.low);
   $('orbStatus').textContent=d.orb.status;
-  $('signal').textContent=d.setup?(d.signal+' · '+d.setup.state):d.signal;
-  $('signal').className='signal-pill'+(d.setup?.direction==='UP'?' up':d.setup?.direction==='DOWN'?' down':'');
+  $('signal').textContent=activeSetup?(activeName+' · '+activeSetup.state):d.signal;
+  $('signal').className='signal-pill'+(activeSetup?.direction==='UP'?' up':activeSetup?.direction==='DOWN'?' down':'');
   const signalMap={
     'BULLISH BREAKOUT':'A completed 5m candle broke above the opening range; reference levels are locked at confirmation.',
     'BEARISH BREAKDOWN':'A completed 5m candle broke below the opening range; reference levels are locked at confirmation.',
@@ -114,17 +166,19 @@ function render(d){
   $('orbExplain').textContent=signalMap[d.signal]||'Waiting for 09:15–09:30 completed candles.';
   $('ema9').textContent=n(d.indicators.ema9);$('ema21').textContent=n(d.indicators.ema21);
   $('rsi14').textContent=d.indicators.rsi14!=null?n(d.indicators.rsi14):'—';
-  $('chart').innerHTML=chartSvg(d.candles,d.orb,d.levels,d.events);
+  const overlay=useRolling?rollingEvent:d.levels;
+  $('chart').innerHTML=chartSvg(d.candles,d.orb,overlay,d.events,d.rolling);
+  renderRolling(d);
   $('candlesCount').textContent=String(d.candleCount);
   $('freshness').textContent=d.fresh?'Fresh completed bar':d.isCurrentSession?'Delayed / stale':'Previous session';
   $('freshness').className=d.fresh?'positive':'negative';
   $('feedNote').textContent=d.note||'Quotes are based on completed 5-minute candles; not streaming or guaranteed executable prices.';
-  const p=d.levels;
+  const p=useRolling?rollingEvent:d.levels;
   $('entryLevel').textContent=n(p?.entry);$('stopLevel').textContent=n(p?.stop);
   $('targetOne').textContent=n(p?.target1);$('targetTwo').textContent=n(p?.target2);
-  $('scenarioTag').textContent=p?((d.setup?.optionSide||'')+' · '+(d.setup?.state||'LOCKED')):'NO ACTIVE SETUP';
-  $('setupStatus').textContent=d.setup?`${d.setup.optionSide} direction · ${d.setup.state} · ${istDate(d.setup.candleTime)}`:'No active completed-candle setup';
-  $('optionSideHint').textContent=d.setup?`Index ${d.setup.direction==='UP'?'bullish':'bearish'}: evaluate ${d.setup.optionSide} option separately, not an automatic BUY.`:'Option contract requires independent chain confirmation.';
+  $('scenarioTag').textContent=p?((activeSetup?.optionSide||'')+' · '+(activeSetup?.state||'LOCKED')):'NO ACTIVE SETUP';
+  $('setupStatus').textContent=activeSetup?`${useRolling?'Rolling six-bar':'Opening range'} · ${activeSetup.optionSide} direction · ${activeSetup.state} · ${istDate(activeSetup.candleTime)}`:'No active completed-candle setup';
+  $('optionSideHint').textContent=activeSetup?`Index ${activeSetup.direction==='UP'?'bullish':'bearish'}: evaluate ${activeSetup.optionSide} option separately, not an automatic BUY.`:'Option contract requires independent chain confirmation.';
   if(d.warnings?.length)note(d.warnings.join(' '));
   else if(!d.isCurrentSession)note('Displaying the last available '+Market.name()+' trading session. These are historical candles, not a live intraday signal.',true);
   else if(!d.fresh)note('The latest completed candle is not fresh. Index signals are disabled until newer candles arrive.',true);
@@ -151,6 +205,12 @@ Market.init(()=>{
   $('asOf').textContent='Waiting for completed '+Market.name()+' candles';
   $('feedNote').textContent='Switching to '+Market.name()+' verified Upstox data.';
   $('orbExplain').textContent='Opening range pending.';
+  for(const id of ['rollingUp','rollingDown','rollingRange','rollingCount'])$(id).textContent='—';
+  $('rollingStatus').textContent='LOADING';
+  $('rollingBanner').textContent='Switching to '+Market.name()+' rolling levels…';
+  $('rollingLatest').textContent='Loading '+Market.name()+' confirmed events…';
+  $('rollingRows').innerHTML='<tr><td colspan="8">Loading…</td></tr>';
+  recentSignalId=null;
   refresh();
 });
 $('refreshBtn').addEventListener('click',refresh);
