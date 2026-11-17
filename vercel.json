@@ -11,7 +11,7 @@
   "rewrites": [
     {
       "source": "/api/upstox/readiness",
-      "destination": "/api/upstox-readiness"
+      "destination": "/api/upstox-status?view=readiness"
     },
     {
       "source": "/api/upstox/connect",

@@ -1,3 +1,7 @@
+## StockLens v1.11.2 — Vercel Hobby function-count fix
+
+See [README_HOBBY_FIX.md](README_HOBBY_FIX.md). Two Upstox read-only endpoints now share one serverless function (12 total), fixing the Hobby plan deployment limit.
+
 ## v1.11.1 — Three-lot default selector
 
 `/trading-setup.html` now has a **Number of lots** dropdown (Default — 3 lots; 1–5 custom lots). Blank, null or omitted `lots` API query becomes three; invalid values are rejected. Existing read-only protections and risk caps are retained. See `README_TRADING_READINESS.md`.

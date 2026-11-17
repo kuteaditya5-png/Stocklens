@@ -79,7 +79,7 @@ test('paper session cutoff closes all remaining units; no duplicate signals',()=
 });
 test('no real broker-order integration in safety modules',()=>{
  const fs=require('node:fs');
- for(const path of ['../lib/trading-plan.js','../lib/paper-position-manager.js','../api/trading-preview.js','../api/upstox-readiness.js']){
+ for(const path of ['../lib/trading-plan.js','../lib/paper-position-manager.js','../api/trading-preview.js','../lib/upstox-readiness-handler.js']){
    const src=fs.readFileSync(require.resolve(path),'utf8');
    assert.doesNotMatch(src,/api-hft\.upstox\.com|\/order\/place|\/order\/modify|\/order\/cancel/);
  }

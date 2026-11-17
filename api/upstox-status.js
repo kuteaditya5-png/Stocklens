@@ -1,6 +1,12 @@
 /** Verify a browser-scoped read-only Upstox session; never expose access_token. */
 const oauth=require('../lib/upstox-oauth');
+const readiness=require('../lib/upstox-readiness-handler');
 module.exports=async(req,res)=>{
+  // Both the original profile endpoint and the read-only readiness endpoint
+  // share this single Vercel function to stay inside the Hobby 12-function limit.
+  const path=new URL(req.url||'/', 'https://stocklens.local');
+  if(path.pathname==='/api/upstox/readiness'||path.searchParams.get('view')==='readiness')
+    return readiness(req,res);
   if(oauth.rejectMethod(req,res,'GET'))return;
   const conf=oauth.configuration();
   if(!conf.ready)return oauth.sendJson(res,200,{status:'not_configured',connected:false,missing:conf.missing,liveTradingEnabled:false});
