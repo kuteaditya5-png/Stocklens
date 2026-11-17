@@ -1,3 +1,11 @@
+## v1.11.1 — Three-lot default selector
+
+`/trading-setup.html` now has a **Number of lots** dropdown (Default — 3 lots; 1–5 custom lots). Blank, null or omitted `lots` API query becomes three; invalid values are rejected. Existing read-only protections and risk caps are retained. See `README_TRADING_READINESS.md`.
+
+## NEW in v1.11 — Auto Trading Setup (live orders locked)
+
+See [README_TRADING_READINESS.md](README_TRADING_READINESS.md). Adds an Upstox browser readiness and registered-IP check, whole-lot CE/PE paper risk previews, and a tested paper-only position state machine. **No live order placement or unattended trading is enabled.**
+
 # StockLens v1.8 — Historical T1/T2 evidence for NIFTY 50 and SENSEX
 
 **What this build adds:** After a confirmed five-minute opening-range or rolling-six-candle breakout, breakdown, or failed-break reversal, the Intraday dashboard can show **historical Target 1 (1R) and Target 2 (2R) touch-before-stop rates** for the **same pattern and selected index**. These are **not forecast probabilities**. The rate is `historical matches reaching target within six subsequent completed five-minute bars before touching the stop ÷ total historical matches`.

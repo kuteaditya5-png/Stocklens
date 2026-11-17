@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>StockLens — Auto Trading Setup</title><link rel="stylesheet" href="/index-intraday.css"><link rel="stylesheet" href="/trading-setup.css">
+<script src="/market-selector.js" defer></script><script src="/trading-setup.js" defer></script></head>
+<body><div class="frame">
+<aside class="sidebar"><a class="brand" href="/"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / TRADING LAB</small></span></a>
+<div class="nav-caption">WORKSPACE</div>
+<a class="nav-link" href="/"><span class="nav-icon">▥</span><span data-market-name>NIFTY 50</span> Intraday</a>
+<a class="nav-link" href="/option-advisor.html"><span class="nav-icon">⌖</span>CE/PE Advisor</a>
+<a class="nav-link" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest</a>
+<a class="nav-link" href="/upstox-connect.html"><span class="nav-icon">🔒</span>Connect Upstox</a>
+<a class="nav-link current" href="/trading-setup.html" aria-current="page"><span class="nav-icon">⚙</span>Auto Trading Setup<span class="nav-count">LOCKED</span></a>
+<div class="sidebar-tip"><span class="dot"></span><b>Trading execution disabled</b><p>This release adds read-only risk previews and broker readiness checks. It cannot send orders.</p></div><div class="sidebar-foot">READ ONLY · NEVER PLACES ORDERS</div></aside>
+<main class="main"><header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Auto Trading Setup</strong></div><div class="topright"><label class="market-select-label" for="marketSelect">INDEX <select id="marketSelect" aria-label="Index"><option value="nifty">NIFTY 50</option><option value="sensex">SENSEX</option></select></label><span class="market-pill closed">LIVE ORDERS LOCKED</span></div></header>
+<div class="main-inner"><section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> BROKER INTEGRATION · STAGE 1</div><h1>Auto Trading <span>Setup</span></h1><p>Plan exact option quantities, +35 / +50 premium targets and stop protection. Check Upstox authorization and registered static IP. <b>No real orders are placed.</b></p></div></section>
+<div class="risk-banner" role="status"><b>🔒 Live execution disabled by design.</b> Your browser-only OAuth connection cannot run unattended trades. A static-IP server, persistent encrypted token vault, broker position reconciliation and sandbox acceptance are required first.</div>
+<section class="card readiness"><div class="section-head"><div><div class="eyebrow eyebrow-compact">UPSTOX READINESS</div><h2>Execution prerequisites</h2></div><button class="btn btn-blue" id="checkBtn" type="button">↻ Check broker readiness</button></div><div class="check-grid" id="checkGrid" aria-live="polite"><p>Click Check broker readiness to inspect your current browser authorization and whether an Upstox static IP is registered.</p></div></section>
+<section class="card readiness"><div class="section-head"><div><div class="eyebrow eyebrow-compact">READ-ONLY OPTION PLAN</div><h2>Breakout trade preview</h2></div><span class="chip">+35 MINIMUM PREMIUM TARGET</span></div>
+<p class="small-muted">Only creates a plan when a NEW completed-candle setup passes the current CE/PE Advisor's actual contract data checks. At night or without fresh quotes, WAIT is expected.</p>
+<div class="preview-control"><label for="lots">Number of lots <select id="lots" name="lots"><option value="" selected>Default — 3 lots</option><option value="1">1 lot</option><option value="2">2 lots</option><option value="3">3 lots</option><option value="4">4 lots</option><option value="5">5 lots</option></select><small class="lots-help">No selection → 3 lots. Complete exchange lots only; risk limits still apply.</small></label>
+<button type="button" id="previewBtn" class="btn btn-blue">Validate trade plan</button></div>
+<div id="previewNote" class="preview-note" aria-live="polite">No plan loaded. Browser will request your private StockLens access key when needed.</div>
+<div id="previewData" hidden>
+ <div class="plan-cards"><div><span>Contract</span><strong id="pContract">—</strong></div><div><span>Total quantity</span><strong id="pQuantity">—</strong></div><div><span>Entry / Stop</span><strong id="pEntryStop">—</strong></div><div><span>Max planned gross risk</span><strong id="pRisk">—</strong></div></div>
+ <div class="table-scroll"><table><thead><tr><th>EXIT STAGE</th><th>LOTS</th><th>UNITS</th><th>OPTION TARGET</th><th>INDICATIVE GROSS P&L</th><th>EXECUTION</th></tr></thead><tbody id="planRows"></tbody></table></div>
+ <p class="fine-print" id="planWarning"></p>
+</div></section>
+<section class="card readiness"><div class="section-head"><div><div class="eyebrow eyebrow-compact">BEFORE FIRST LIVE ORDER</div><h2>Required next engineering steps</h2></div></div><ol class="next-steps"><li>Deploy a dedicated always-on trading worker with its own static public outbound IP, and register that IP in Upstox My Apps.</li><li>Authorize the Algo Trading App on the worker and store tokens encrypted in a server-side vault. Existing browser cookies must never be copied into trading code.</li><li>Record signals and broker orders in durable storage with unique IDs, audit logs, deduplication, and actual fills.</li><li>Implement &amp; sandbox-test a protected full-quantity stop, partial exits in complete lots, stop adjustments and a forced session cutoff. Reconcile rejects and partial fills continuously.</li><li>Set account-specific max loss, max trades, max positions, kill switch and explicit live enablement after testing.</li></ol></section>
+<footer><span>StockLens v1.11 · Live-trading readiness</span><span>No live orders, no trades, no secret exposure</span></footer>
+</div></main></div></body></html>

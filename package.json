@@ -1,8 +1,8 @@
 {
   "name": "stocklens-india-daytrader",
-  "version": "1.9.0",
+  "version": "1.11.1",
   "private": true,
-  "description": "StockLens NIFTY/SENSEX intraday index desk with read-only one-week historical CE/PE research backtest",
+  "description": "StockLens NIFTY/SENSEX broker readiness, risk plans and paper position manager (live orders disabled)",
   "scripts": {
     "dev": "node dev-server.js",
     "build": "node scripts/build.js",

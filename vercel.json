@@ -10,6 +10,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/upstox/readiness",
+      "destination": "/api/upstox-readiness"
+    },
+    {
       "source": "/api/upstox/connect",
       "destination": "/api/upstox-connect"
     },

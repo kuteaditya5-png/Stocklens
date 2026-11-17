@@ -8,7 +8,7 @@ let selected=isValid(urlValue)?urlValue:isValid(saved())?saved():'nifty';
 function updateLinks(){
   document.querySelectorAll('a[href^="/"]').forEach(a=>{
     const u=new URL(a.href,location.origin);
-    if(!['/','/index.html','/backtest.html','/option-advisor.html'].includes(u.pathname))return;
+    if(!['/','/index.html','/backtest.html','/option-advisor.html','/trading-setup.html'].includes(u.pathname))return;
     u.searchParams.set('market',selected);
     a.href=u.pathname+u.search+u.hash;
   });
