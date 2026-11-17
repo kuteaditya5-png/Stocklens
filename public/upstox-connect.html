@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1020"><meta name="referrer" content="no-referrer">
+<title>StockLens — Upstox Connection</title>
+<link rel="stylesheet" href="/index-intraday.css"><link rel="stylesheet" href="/upstox-connect.css">
+<script src="/upstox-connect.js" defer></script>
+</head>
+<body>
+<div class="frame">
+ <aside class="sidebar">
+  <a class="brand" href="/"><span class="brand-icon">↗</span><span><b>STOCKLENS<span class="brand-point">.</span></b><small>INDIA / INDEX DESK</small></span></a>
+  <div class="nav-caption">WORKSPACE</div>
+  <a class="nav-link" href="/"><span class="nav-icon">▥</span>Index Intraday</a>
+  <a class="nav-link" href="/option-advisor.html"><span class="nav-icon">⌖</span>CE/PE Option Advisor</a>
+  <a class="nav-link" href="/backtest.html"><span class="nav-icon">◷</span>Historical Backtest</a>
+  <a class="nav-link current" href="/upstox-connect.html" aria-current="page"><span class="nav-icon">🔒</span>Connect Upstox</a>
+  <div class="sidebar-tip"><span class="dot"></span><b>Connection only</b><p>Read-only login verification. No broker orders or automated execution.</p></div>
+  <div class="sidebar-foot">OAUTH 2.0 · PAPER FIRST<br>NO LIVE ORDER CODE</div>
+ </aside>
+ <main class="main"><header class="topbar"><div class="crumb">Workspace <span>/</span> <strong>Upstox connection</strong></div><span class="market-pill closed">LIVE ORDERS DISABLED</span></header>
+  <div class="main-inner">
+   <section class="intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> SECURE BROKER LOGIN</div><h1>Connect <span>Upstox</span></h1><p>Authorize your own Upstox Algo Trading App. This release tests login and account authorization only. Your existing NIFTY/SENSEX analysis is unchanged.</p></div></section>
+   <section class="card oauth-card">
+    <div class="section-head"><div><div class="eyebrow eyebrow-compact">OAUTH CONNECTION</div><h2 id="statusTitle">Not checked</h2></div><span class="oauth-pill" id="badge">DISCONNECTED</span></div>
+    <p class="oauth-msg" id="message" role="status">Use Check status to verify the connection. The browser will ask for your private StockLens access key if needed.</p>
+    <div class="oauth-actions"><button type="button" id="connectBtn" class="btn btn-blue">Connect with Upstox</button><button type="button" id="checkBtn" class="oauth-btn">Check status</button><button type="button" id="disconnectBtn" class="oauth-btn secondary">Clear browser connection</button></div>
+    <div class="oauth-detail"><div><span>OAuth callback</span><code>https://stocklensapi-2040.vercel.app/api/upstox/callback</code></div><div><span>Token handling</span><strong>Encrypted, HttpOnly browser-session cookie</strong></div><div><span>Expiry</span><strong id="expires">Daily Upstox reauthorization required</strong></div><div><span>Execution mode</span><strong>READ ONLY · ORDERS DISABLED</strong></div></div>
+   </section>
+   <section class="card oauth-help"><h2>Before connecting</h2><ol><li>Deploy the StockLens OAuth update to the production site.</li><li>Create an Upstox <b>Algo Trading App</b> with the exact callback shown above.</li><li>Set <code>UPSTOX_API_KEY</code>, <code>UPSTOX_API_SECRET</code>, <code>UPSTOX_REDIRECT_URI</code>, <code>STOCKLENS_OAUTH_SECRET</code>, and your existing <code>STOCKLENS_ACCESS_KEY</code> in Vercel's Production environment.</li><li>Redeploy, click <b>Connect with Upstox</b>, and log in on Upstox's official page.</li></ol>
+   <p class="fine-print"><b>Never share API secrets, access tokens or OTPs.</b> This starter uses a sealed browser cookie, not an always-on backend token vault. Automatic CE/PE entries, multiple exit orders, trailing stops and static-IP broker execution <b>are not enabled or implemented</b> in this release. A separate hardened trading server, persistent encrypted credential storage, static IP registration and broker sandbox tests will be needed before any real orders.</p></section>
+   <footer><span>StockLens OAuth Connection v1.10 · Secure authentication prototype</span><span>No live orders · Browser scoped session</span></footer>
+  </div>
+ </main>
+</div>
+</body>
+</html>

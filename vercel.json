@@ -4,9 +4,30 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "functions": {
-    "api/*.js": { "maxDuration": 60 }
+    "api/*.js": {
+      "maxDuration": 60
+    }
   },
   "rewrites": [
-    { "source": "/", "destination": "/index.html" }
+    {
+      "source": "/api/upstox/connect",
+      "destination": "/api/upstox-connect"
+    },
+    {
+      "source": "/api/upstox/callback",
+      "destination": "/api/upstox-callback"
+    },
+    {
+      "source": "/api/upstox/status",
+      "destination": "/api/upstox-status"
+    },
+    {
+      "source": "/api/upstox/disconnect",
+      "destination": "/api/upstox-disconnect"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
   ]
 }

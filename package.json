@@ -1,12 +1,13 @@
 {
   "name": "stocklens-india-daytrader",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
-  "description": "NIFTY 50 and SENSEX index desk with matched ORB, reversals, backtesting, and read-only option advisor",
+  "description": "StockLens NIFTY/SENSEX intraday index desk with read-only one-week historical CE/PE research backtest",
   "scripts": {
     "dev": "node dev-server.js",
     "build": "node scripts/build.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "backtest:week": "node scripts/one-week-backtest.js"
   },
   "engines": {
     "node": ">=20"
